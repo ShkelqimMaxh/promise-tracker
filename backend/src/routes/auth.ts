@@ -306,7 +306,7 @@ router.post('/google', async (req: Request, res: Response) => {
             throw new Error('Failed to fetch user info from Google');
           }
 
-          const userInfo = await response.json();
+          const userInfo = await response.json() as { id: string; email?: string; name?: string };
           googleId = userInfo.id;
           email = userInfo.email || '';
           name = userInfo.name || '';

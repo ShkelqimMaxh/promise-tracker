@@ -52,7 +52,9 @@ export interface TokenPayload {
   type: 'access' | 'refresh';
 }
 
-export interface AuthenticatedRequest extends Express.Request {
+import { Request } from 'express';
+
+export interface AuthenticatedRequest extends Request {
   user?: {
     id: string;
     email: string;

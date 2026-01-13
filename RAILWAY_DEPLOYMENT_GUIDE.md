@@ -91,8 +91,25 @@ git push -u origin main
 1. **Go to Railway Dashboard**: https://railway.app/dashboard
 2. **Click "New Project"**
 3. **Select "Deploy from GitHub repo"**
-4. **Choose your repository** (promise-tracker or promise-tracker-backend)
+4. **Choose your repository** (`ShkelqimMaxh/promise-tracker`)
 5. **Railway will detect it's a Node.js project**
+
+### ⚠️ IMPORTANT: Configure Root Directory for Backend Only
+
+Since your backend is in a `backend/` subfolder, you need to tell Railway to deploy only that folder:
+
+1. **After selecting your repo**, Railway will create a service
+2. **Click on the service** that was just created
+3. **Go to "Settings" tab**
+4. **Find "Root Directory"** setting
+5. **Set it to**: `backend`
+6. **Click "Save"** or it auto-saves
+
+This tells Railway to:
+- Look for `package.json` in the `backend/` folder
+- Run `npm install` in the `backend/` folder
+- Run `npm run build` in the `backend/` folder
+- Start the app from the `backend/` folder
 
 ---
 
@@ -144,15 +161,15 @@ Copy the output and use it as your `JWT_SECRET`.
 
 ---
 
-## Step 7: Configure Build Settings (If Needed)
+## Step 7: Verify Build Settings
 
 1. **Click on your backend service**
 2. **Go to "Settings" tab**
-3. **Check "Root Directory"**:
-   - If your backend is in a `backend/` folder: Set to `backend`
-   - If backend is the root: Leave empty
-4. **Build Command**: Railway auto-detects, but ensure it's: `npm run build`
-5. **Start Command**: Should be: `npm start`
+3. **Verify "Root Directory"** is set to: `backend` ✅
+4. **Build Command**: Should be: `npm run build` (Railway auto-detects this)
+5. **Start Command**: Should be: `npm start` (Railway auto-detects this)
+
+If Root Directory is not set to `backend`, set it now!
 
 ---
 

@@ -7,6 +7,9 @@ import { verifyAccessToken } from '../utils/jwt';
 import { UserService } from '../services/userService';
 import { AuthenticatedRequest } from '../types/auth';
 
+// Export AuthenticatedRequest for use in routes
+export type { AuthenticatedRequest };
+
 export async function authenticate(
   req: AuthenticatedRequest,
   res: Response,
