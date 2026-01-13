@@ -2,7 +2,9 @@
  * Promise Types
  */
 
-export interface Promise {
+export type PromiseStatus = 'ongoing' | 'completed' | 'overdue' | 'declined';
+
+export interface PromiseRecord {
   id: string;
   user_id: string;
   promisee_id?: string | null;
@@ -10,7 +12,7 @@ export interface Promise {
   title: string;
   description?: string | null;
   deadline?: Date | null;
-  status: 'ongoing' | 'completed' | 'overdue' | 'declined';
+  status: PromiseStatus;
   created_at: Date;
   updated_at: Date;
 }
@@ -21,13 +23,35 @@ export interface CreatePromiseRequest {
   deadline?: string;
   promisee_email?: string;
   mentor_email?: string;
+  promisee_id?: string;
+  mentor_id?: string;
+  milestones?: CreateMilestoneRequest[];
 }
 
 export interface UpdatePromiseRequest {
   title?: string;
   description?: string;
   deadline?: string;
-  status?: 'ongoing' | 'completed' | 'overdue' | 'declined';
+  status?: PromiseStatus;
+  promisee_id?: string;
+  mentor_id?: string;
+}
+
+export interface PromiseWithRelations extends PromiseRecord {
+  promisee?: {
+    id: string;
+    name: string;
+    email: string;
+  };
+  mentor?: {
+    id: string;
+    name: string;
+    email: string;
+  };
+  milestones?: Milestone[];
+  notes?: (PromiseNote & { user_name?: string; user_email?: string })[];
+  milestone_count?: number;
+  completed_milestones?: number;
 }
 
 export interface Milestone {

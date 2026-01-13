@@ -4,13 +4,13 @@
  */
 
 import { pool } from '../config/database';
-import { Promise, CreatePromiseRequest, UpdatePromiseRequest, PromiseWithRelations, PromiseStatus } from '../types/promise';
+import { PromiseRecord, CreatePromiseRequest, UpdatePromiseRequest, PromiseWithRelations, PromiseStatus } from '../types/promise';
 
 export class PromiseService {
   /**
    * Create a new promise
    */
-  static async createPromise(userId: string, data: CreatePromiseRequest): Promise<Promise> {
+  static async createPromise(userId: string, data: CreatePromiseRequest): Promise<PromiseRecord> {
     const { title, description, deadline, promisee_id, mentor_id } = data;
 
     // Validate and parse deadline
@@ -129,7 +129,7 @@ export class PromiseService {
   /**
    * Get all promises for a user (where user is owner, promisee, or mentor)
    */
-  static async findByUserId(userId: string, status?: PromiseStatus): Promise<Promise[]> {
+  static async findByUserId(userId: string, status?: PromiseStatus): Promise<PromiseRecord[]> {
     let query = `
       SELECT * FROM promises
       WHERE (user_id = $1 OR promisee_id = $1 OR mentor_id = $1)
@@ -150,7 +150,7 @@ export class PromiseService {
   /**
    * Get promises where user is owner
    */
-  static async findOwnedPromises(userId: string, status?: PromiseStatus): Promise<Promise[]> {
+  static async findOwnedPromises(userId: string, status?: PromiseStatus): Promise<PromiseRecord[]> {
     let query = `SELECT * FROM promises WHERE user_id = $1`;
     const params: any[] = [userId];
 
@@ -168,7 +168,7 @@ export class PromiseService {
   /**
    * Get promises where user is promisee (promised to them)
    */
-  static async findPromisedToUser(userId: string, status?: PromiseStatus): Promise<Promise[]> {
+  static async findPromisedToUser(userId: string, status?: PromiseStatus): Promise<PromiseRecord[]> {
     let query = `SELECT * FROM promises WHERE promisee_id = $1 AND status != 'declined'`;
     const params: any[] = [userId];
 
@@ -186,7 +186,7 @@ export class PromiseService {
   /**
    * Get promises where user is mentor
    */
-  static async findMentoredPromises(userId: string, status?: PromiseStatus): Promise<Promise[]> {
+  static async findMentoredPromises(userId: string, status?: PromiseStatus): Promise<PromiseRecord[]> {
     let query = `SELECT * FROM promises WHERE mentor_id = $1`;
     const params: any[] = [userId];
 
@@ -206,7 +206,7 @@ export class PromiseService {
    * - Owner can update: title, description, deadline, status, promisee_id, mentor_id
    * - Promisee can update: status (to 'completed' only)
    */
-  static async updatePromise(id: string, userId: string, data: UpdatePromiseRequest): Promise<Promise | null> {
+  static async updatePromise(id: string, userId: string, data: UpdatePromiseRequest): Promise<PromiseRecord | null> {
     // Get promise details to check permissions
     const checkResult = await pool.query(
       `SELECT user_id, promisee_id, status FROM promises WHERE id = $1`,
@@ -316,7 +316,7 @@ export class PromiseService {
   /**
    * Decline promise (only promisee can decline)
    */
-  static async declinePromise(id: string, promiseeId: string): Promise<Promise | null> {
+  static async declinePromise(id: string, promiseeId: string): Promise<PromiseRecord | null> {
     const result = await pool.query(
       `UPDATE promises 
        SET status = 'declined' 

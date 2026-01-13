@@ -2,12 +2,12 @@
  * JWT Utility Functions
  */
 
-import jwt from 'jsonwebtoken';
+import jwt, { SignOptions } from 'jsonwebtoken';
 import { TokenPayload } from '../types/auth';
 
-const JWT_SECRET = process.env.JWT_SECRET || 'default-secret-change-in-production';
-const ACCESS_TOKEN_EXPIRY = process.env.ACCESS_TOKEN_EXPIRY || '15m';
-const REFRESH_TOKEN_EXPIRY = process.env.REFRESH_TOKEN_EXPIRY || '7d';
+const JWT_SECRET = (process.env.JWT_SECRET || 'default-secret-change-in-production') as string;
+const ACCESS_TOKEN_EXPIRY = (process.env.ACCESS_TOKEN_EXPIRY || '15m') as string;
+const REFRESH_TOKEN_EXPIRY = (process.env.REFRESH_TOKEN_EXPIRY || '7d') as string;
 
 /**
  * Generate access token
@@ -19,9 +19,9 @@ export function generateAccessToken(payload: { userId: string; email: string }):
     type: 'access',
   };
 
-  return jwt.sign(tokenPayload, JWT_SECRET as string, {
+  return jwt.sign(tokenPayload, JWT_SECRET, {
     expiresIn: ACCESS_TOKEN_EXPIRY,
-  });
+  } as SignOptions);
 }
 
 /**
@@ -34,9 +34,9 @@ export function generateRefreshToken(payload: { userId: string; email: string })
     type: 'refresh',
   };
 
-  return jwt.sign(tokenPayload, JWT_SECRET as string, {
+  return jwt.sign(tokenPayload, JWT_SECRET, {
     expiresIn: REFRESH_TOKEN_EXPIRY,
-  });
+  } as SignOptions);
 }
 
 /**
