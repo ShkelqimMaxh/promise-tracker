@@ -6,8 +6,43 @@ import jwt, { SignOptions } from 'jsonwebtoken';
 import { TokenPayload } from '../types/auth';
 
 const JWT_SECRET = (process.env.JWT_SECRET || 'default-secret-change-in-production') as string;
-const ACCESS_TOKEN_EXPIRY = (process.env.ACCESS_TOKEN_EXPIRY || '15m') as string;
-const REFRESH_TOKEN_EXPIRY = (process.env.REFRESH_TOKEN_EXPIRY || '7d') as string;
+
+// Validate and sanitize token expiry values
+// Valid formats: "15m", "1h", "7d", "3600" (seconds), etc.
+const isValidExpiry = (value: string): boolean => {
+  if (!value) return false;
+  // Check if it's a valid time string (ends with m, h, d, s) or is a number
+  const timeRegex = /^(\d+)([smhd]|ms)?$/i;
+  const isNumber = /^\d+$/.test(value);
+  return timeRegex.test(value) || isNumber;
+};
+
+const getAccessTokenExpiry = (): string => {
+  const envValue = process.env.ACCESS_TOKEN_EXPIRY;
+  if (envValue && isValidExpiry(envValue)) {
+    return envValue;
+  }
+  // Invalid value in env, use default
+  if (envValue) {
+    console.warn(`Invalid ACCESS_TOKEN_EXPIRY value: "${envValue}". Using default "15m"`);
+  }
+  return '15m';
+};
+
+const getRefreshTokenExpiry = (): string => {
+  const envValue = process.env.REFRESH_TOKEN_EXPIRY;
+  if (envValue && isValidExpiry(envValue)) {
+    return envValue;
+  }
+  // Invalid value in env, use default
+  if (envValue) {
+    console.warn(`Invalid REFRESH_TOKEN_EXPIRY value: "${envValue}". Using default "7d"`);
+  }
+  return '7d';
+};
+
+const ACCESS_TOKEN_EXPIRY = getAccessTokenExpiry();
+const REFRESH_TOKEN_EXPIRY = getRefreshTokenExpiry();
 
 /**
  * Generate access token

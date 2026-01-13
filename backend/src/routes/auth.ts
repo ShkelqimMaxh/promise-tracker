@@ -18,10 +18,17 @@ import { OAuth2Client } from 'google-auth-library';
 const router = Router();
 
 // Initialize Google OAuth client
-const googleClient = new OAuth2Client(
-  process.env.GOOGLE_CLIENT_ID,
-  process.env.GOOGLE_CLIENT_SECRET
-);
+const GOOGLE_CLIENT_ID = process.env.GOOGLE_CLIENT_ID;
+const GOOGLE_CLIENT_SECRET = process.env.GOOGLE_CLIENT_SECRET;
+
+let googleClient: OAuth2Client | null = null;
+
+if (GOOGLE_CLIENT_ID && GOOGLE_CLIENT_SECRET) {
+  googleClient = new OAuth2Client(GOOGLE_CLIENT_ID, GOOGLE_CLIENT_SECRET);
+  console.log('Google OAuth client initialized');
+} else {
+  console.warn('⚠️ Google OAuth not configured: GOOGLE_CLIENT_ID or GOOGLE_CLIENT_SECRET missing');
+}
 
 /**
  * Register new user
@@ -279,6 +286,12 @@ router.get('/me', authenticate, async (req: AuthenticatedRequest, res: Response)
  */
 router.post('/google', async (req: Request, res: Response) => {
   try {
+    // Check if Google OAuth is configured
+    if (!googleClient || !GOOGLE_CLIENT_ID) {
+      res.status(503).json({ error: 'Google OAuth is not configured on the server' });
+      return;
+    }
+
     const { idToken, accessToken } = req.body;
 
     let googleId: string;
@@ -320,7 +333,7 @@ router.post('/google', async (req: Request, res: Response) => {
         try {
           const ticket = await googleClient.verifyIdToken({
             idToken,
-            audience: process.env.GOOGLE_CLIENT_ID,
+            audience: GOOGLE_CLIENT_ID,
           });
 
           const payload = ticket.getPayload();
