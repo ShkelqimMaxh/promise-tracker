@@ -221,10 +221,12 @@ export class PromiseService {
     const isOwner = promise.user_id === userId;
     const isPromisee = promise.promisee_id === userId;
 
-    // If updating status to completed, allow both owner and promisee
+    // If updating status: completed (owner or promisee), not_made (owner only)
     if (data.status !== undefined) {
       if (data.status === 'completed' && (isOwner || isPromisee)) {
         // Both owner and promisee can mark as completed
+      } else if (data.status === 'not_made' && isOwner) {
+        // Only owner can mark as not made (softer than "failed")
       } else if (!isOwner) {
         // Only owner can change status to other values
         throw new Error('Only the owner can update promise status');

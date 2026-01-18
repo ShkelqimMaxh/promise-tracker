@@ -2,7 +2,7 @@
  * Promise Types
  */
 
-export type PromiseStatus = 'ongoing' | 'completed' | 'overdue' | 'declined';
+export type PromiseStatus = 'ongoing' | 'completed' | 'overdue' | 'declined' | 'not_made';
 
 export interface PromiseRecord {
   id: string;

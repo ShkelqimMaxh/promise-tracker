@@ -132,7 +132,7 @@ export async function initializeDatabase() {
         title VARCHAR(500) NOT NULL,
         description TEXT,
         deadline TIMESTAMP,
-        status VARCHAR(20) NOT NULL DEFAULT 'ongoing' CHECK (status IN ('ongoing', 'completed', 'overdue', 'declined')),
+        status VARCHAR(20) NOT NULL DEFAULT 'ongoing' CHECK (status IN ('ongoing', 'completed', 'overdue', 'declined', 'not_made')),
         created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
         updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
       )
@@ -212,6 +212,29 @@ export async function initializeDatabase() {
     await pool.query(`
       CREATE INDEX IF NOT EXISTS idx_promises_status ON promises(status)
     `);
+
+    // Migration: add 'not_made' to promise status (for existing DBs)
+    try {
+      // Find and drop the status check constraint (name can vary: promises_status_check, etc.)
+      const cons = await pool.query(`
+        SELECT c.conname
+        FROM pg_constraint c
+        JOIN pg_class t ON c.conrelid = t.oid
+        WHERE t.relname = 'promises' AND c.contype = 'c'
+      `);
+      for (const row of cons.rows) {
+        await pool.query({ text: `ALTER TABLE promises DROP CONSTRAINT IF EXISTS "` + String(row.conname).replace(/"/g, '""') + `"` });
+      }
+      // Drop by common name (idempotent) and add new constraint
+      await pool.query(`ALTER TABLE promises DROP CONSTRAINT IF EXISTS promises_status_check`);
+      await pool.query(`
+        ALTER TABLE promises ADD CONSTRAINT promises_status_check
+        CHECK (status IN ('ongoing', 'completed', 'overdue', 'declined', 'not_made'))
+      `);
+      console.log('✓ Added not_made to promise status');
+    } catch (error: any) {
+      console.log('Note: Could not migrate promise status (may already include not_made):', error.message);
+    }
 
     await pool.query(`
       CREATE INDEX IF NOT EXISTS idx_milestones_promise_id ON milestones(promise_id)
