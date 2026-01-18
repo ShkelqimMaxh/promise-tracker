@@ -289,7 +289,12 @@ router.put('/:id', async (req: AuthenticatedRequest, res: Response) => {
     }
   } catch (error: any) {
     console.error('Update promise error:', error);
-    res.status(500).json({ error: 'Failed to update promise' });
+    // Include underlying error when it's a constraint/DB issue (e.g. status not_made not yet migrated)
+    const msg = error.message || 'Failed to update promise';
+    const isDb = error.code === '23514' || String(msg).toLowerCase().includes('check constraint');
+    res.status(500).json({
+      error: isDb ? (msg + ' (run backend restart to apply DB migration for not_made)') : 'Failed to update promise',
+    });
   }
 });
 
