@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "main": "node_modules/expo/AppEntry.js",
   "scripts": {
-    "build": "expo export:web",
+    "build": "expo export --platform web",
     "start": "serve dist -s -l ${PORT:-8080}",
     "dev": "NODE_OPTIONS='-r ./setup-polyfills.js' expo start",
     "android": "NODE_OPTIONS='-r ./setup-polyfills.js' expo run:android",
