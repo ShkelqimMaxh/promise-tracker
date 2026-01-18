@@ -1,0 +1,47 @@
+{
+  "name": "promise-tracker-mobile",
+  "version": "1.0.0",
+  "main": "node_modules/expo/AppEntry.js",
+  "scripts": {
+    "build": "expo export:web",
+    "start": "serve dist -s -l ${PORT:-8080}",
+    "dev": "NODE_OPTIONS='-r ./setup-polyfills.js' expo start",
+    "android": "NODE_OPTIONS='-r ./setup-polyfills.js' expo run:android",
+    "ios": "NODE_OPTIONS='-r ./setup-polyfills.js' expo run:ios",
+    "web": "NODE_OPTIONS='-r ./setup-polyfills.js' expo start --web",
+    "clean": "rm -rf node_modules/.cache && rm -rf .expo && rm -rf ios/Pods ios/Podfile.lock ios/build && rm -rf android/app/build android/.gradle android/build",
+    "clean:ios": "rm -rf ios/Pods ios/Podfile.lock ios/build",
+    "clean:android": "rm -rf android/app/build android/.gradle android/build",
+    "prebuild:clean": "npx expo prebuild --clean"
+  },
+  "dependencies": {
+    "@expo-google-fonts/inter": "^0.4.2",
+    "@expo-google-fonts/plus-jakarta-sans": "^0.4.2",
+    "@expo/metro-runtime": "~4.0.0",
+    "@react-native-async-storage/async-storage": "~2.1.0",
+    "@react-native-community/datetimepicker": "^8.6.0",
+    "expo": "~54.0.0",
+    "expo-auth-session": "~6.0.0",
+    "expo-font": "~13.0.0",
+    "expo-linear-gradient": "~14.0.0",
+    "expo-notifications": "^0.32.16",
+    "expo-status-bar": "~2.0.0",
+    "expo-web-browser": "~14.0.0",
+    "lucide-react-native": "~0.562.0",
+    "react": "19.1.0",
+    "react-dom": "19.1.0",
+    "react-native": "0.81.5",
+    "react-native-reanimated": "~4.1.1",
+    "react-native-safe-area-context": "^5.6.2",
+    "react-native-svg": "15.8.0",
+    "react-native-web": "~0.20.0",
+    "react-native-worklets": "0.5.1",
+    "serve": "^14.2.4"
+  },
+  "devDependencies": {
+    "@babel/core": "7.25.9",
+    "@types/react": "18.3.12",
+    "typescript": "5.6.3"
+  },
+  "private": true
+}
