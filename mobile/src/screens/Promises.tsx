@@ -18,6 +18,7 @@ import { LinearGradient } from 'expo-linear-gradient';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import * as Notifications from 'expo-notifications';
 import { useTheme } from '../theme/ThemeProvider';
+import { useIsMobileView } from '../hooks/useIsMobileView';
 import { useAuth } from '../contexts/AuthContext';
 import { apiService } from '../services/api';
 import {
@@ -80,11 +81,12 @@ function PromiseCard({
   onNavigate?: (route: string) => void;
 }) {
   const insets = useSafeAreaInsets();
+  const { isDesktopView } = useIsMobileView();
   const safeInsets = {
     top: insets?.top ?? 0,
     bottom: insets?.bottom ?? 0,
   };
-  const styles = createStyles(theme, safeInsets);
+  const styles = createStyles(theme, safeInsets, isDesktopView);
   const [menuVisible, setMenuVisible] = useState(false);
   const [isHovered, setIsHovered] = useState(false);
   const [menuPosition, setMenuPosition] = useState({ x: 0, y: 0 });
@@ -344,6 +346,7 @@ function PromiseCard({
 
 export default function Promises({ onNavigate }: PromisesProps) {
   const { theme } = useTheme();
+  const { isMobileView, isDesktopView } = useIsMobileView();
   const { user } = useAuth();
   const { showToast } = useToast();
   const insets = useSafeAreaInsets();
@@ -358,7 +361,7 @@ export default function Promises({ onNavigate }: PromisesProps) {
     bottom: insets?.bottom ?? 0,
   };
 
-  const styles = createStyles(theme, safeInsets);
+  const styles = createStyles(theme, safeInsets, isDesktopView);
 
   useEffect(() => {
     loadPromises();
@@ -504,7 +507,7 @@ export default function Promises({ onNavigate }: PromisesProps) {
               <View style={styles.logoIcon}>
                 <Text style={styles.logoText}>PT</Text>
               </View>
-              {Platform.OS === 'web' && (
+              {isDesktopView && (
                 <Text style={styles.logoTextFull}>PromiseTracker</Text>
               )}
             </View>
@@ -547,7 +550,7 @@ export default function Promises({ onNavigate }: PromisesProps) {
         {/* Stats Block - Top Section (matches web sidebar) */}
         <View style={styles.statsBlock}>
           {/* Reliability Card */}
-          {(Platform.OS === 'web' || !dismissedReliabilityCard) && (
+          {(isDesktopView || !dismissedReliabilityCard) && (
             <View style={styles.reliabilityCard}>
               <View style={styles.reliabilityCardContent}>
                 <View style={styles.reliabilityHeader}>
@@ -558,7 +561,7 @@ export default function Promises({ onNavigate }: PromisesProps) {
                     <Text style={styles.reliabilityLabel}>Reliability</Text>
                     <Text style={styles.reliabilityValue}>{completionRate}%</Text>
                   </View>
-                  {Platform.OS !== 'web' && (
+                  {isMobileView && (
                     <TouchableOpacity
                       style={styles.cardDismissButton}
                       onPress={() => setDismissedReliabilityCard(true)}
@@ -615,7 +618,7 @@ export default function Promises({ onNavigate }: PromisesProps) {
           )}
 
           {/* Momentum Card */}
-          {(Platform.OS === 'web' || !dismissedMomentumCard) && (
+          {(isDesktopView || !dismissedMomentumCard) && (
             <View style={styles.momentumCard}>
               <View style={styles.momentumContent}>
                 <View style={styles.momentumHeader}>
@@ -626,7 +629,7 @@ export default function Promises({ onNavigate }: PromisesProps) {
                     <Text style={styles.momentumValue}>{currentStreak} Days</Text>
                     <Text style={styles.momentumLabel}>Momentum</Text>
                   </View>
-                  {Platform.OS !== 'web' && (
+                  {isMobileView && (
                     <TouchableOpacity
                       style={styles.cardDismissButton}
                       onPress={() => setDismissedMomentumCard(true)}
@@ -650,7 +653,7 @@ export default function Promises({ onNavigate }: PromisesProps) {
         <View style={styles.mainContent}>
           {/* Active Promises Section */}
           <View style={styles.activePromisesHeader}>
-            {Platform.OS !== 'web' && (
+            {isMobileView && (
               <Text style={styles.activePromisesTitle}>Active Promises</Text>
             )}
           </View>
@@ -755,27 +758,27 @@ export default function Promises({ onNavigate }: PromisesProps) {
         </View>
       </ScrollView>
 
-      {Platform.OS !== 'web' && (
+      {isMobileView && (
         <BottomNav currentRoute="/promises" onNavigate={onNavigate || (() => {})} />
       )}
     </View>
   );
 }
 
-const createStyles = (theme: any, insets: { top: number; bottom: number }) =>
+const createStyles = (theme: any, insets: { top: number; bottom: number }, isDesktopView: boolean) =>
   StyleSheet.create({
     container: {
       flex: 1,
       backgroundColor: '#f8fafc', // slate-50 (matches web bg-[#f8fafc])
       paddingTop: Math.max((insets?.top ?? 0) - 5, 0), // 5px smaller top gap
-      paddingBottom: Platform.OS === 'web' ? (insets?.bottom ?? 0) : (insets?.bottom ?? 0) + 60, // No extra gap for bottom nav on desktop
+      paddingBottom: isDesktopView ? (insets?.bottom ?? 0) : (insets?.bottom ?? 0) + 60, // No extra gap for bottom nav on desktop
     },
     loadingContainer: {
       justifyContent: 'center',
       alignItems: 'center',
     },
     header: {
-      backgroundColor: Platform.OS === 'web' 
+      backgroundColor: isDesktopView 
         ? 'rgba(255, 255, 255, 0.7)' 
         : theme.colors.card,
       borderBottomWidth: 1,
@@ -880,32 +883,24 @@ const createStyles = (theme: any, insets: { top: number; bottom: number }) =>
       padding: theme.spacing[4],
       paddingTop: theme.spacing[6],
       paddingBottom: theme.spacing[4],
-      ...Platform.select({
-        web: {
-          flexDirection: 'row',
-          alignItems: 'flex-start',
-          justifyContent: 'flex-start',
-          gap: theme.spacing[6],
-        },
-      }),
+      ...(isDesktopView ? {
+        flexDirection: 'row',
+        alignItems: 'flex-start',
+        justifyContent: 'flex-start',
+        gap: theme.spacing[6],
+      } : {}),
     },
     statsBlock: {
       gap: theme.spacing[4],
       marginBottom: theme.spacing[8],
-      flexDirection: 'column',
+      flexDirection: isDesktopView ? 'column' : 'row',
       alignItems: 'flex-start',
-      ...Platform.select({
-        web: {
-          width: 230,
-          marginBottom: 0,
-          marginTop: 25,
-          height: '100%',
-          alignItems: 'flex-start',
-        },
-        default: {
-          flexDirection: 'row',
-        },
-      }),
+      ...(isDesktopView ? {
+        width: 230,
+        marginBottom: 0,
+        marginTop: 25,
+        height: '100%',
+      } : {}),
     },
     reliabilityCard: {
       borderRadius: 24, // rounded-[1.5rem]

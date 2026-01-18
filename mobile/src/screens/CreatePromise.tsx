@@ -26,6 +26,7 @@ try {
   // Package not installed, will use web date input only
 }
 import { useTheme } from '../theme/ThemeProvider';
+import { useIsMobileView } from '../hooks/useIsMobileView';
 import { useAuth } from '../contexts/AuthContext';
 import { apiService } from '../services/api';
 import { useToast } from '../components/ui/Toast';
@@ -52,6 +53,7 @@ type PromiseType = 'personal' | 'social';
 
 export default function CreatePromise({ onNavigate }: CreatePromiseProps) {
   const { theme } = useTheme();
+  const { isDesktopView } = useIsMobileView();
   const { user } = useAuth();
   const insets = useSafeAreaInsets();
   const { showToast } = useToast();
@@ -83,7 +85,7 @@ export default function CreatePromise({ onNavigate }: CreatePromiseProps) {
     bottom: insets?.bottom ?? 0,
   };
 
-  const styles = createStyles(theme, safeInsets);
+  const styles = createStyles(theme, safeInsets, isDesktopView);
 
   const addMilestone = () => {
     if (milestones.length < 8) {
@@ -649,20 +651,20 @@ export default function CreatePromise({ onNavigate }: CreatePromiseProps) {
   );
 }
 
-const createStyles = (theme: any, insets: { top: number; bottom: number }) =>
+const createStyles = (theme: any, insets: { top: number; bottom: number }, isDesktopView: boolean) =>
   StyleSheet.create({
     container: {
       flex: 1,
-      backgroundColor: Platform.OS === 'web' ? '#f8fafc' : theme.colors.background, // slate-50 for web (matches Promises page)
+      backgroundColor: isDesktopView ? '#f8fafc' : theme.colors.background, // slate-50 for desktop (matches Promises page)
       paddingTop: Math.max((insets?.top ?? 0) - 5, 0), // 5px smaller top gap
       paddingBottom: insets?.bottom ?? 0,
     },
     header: {
-      backgroundColor: Platform.OS === 'web' 
+      backgroundColor: isDesktopView 
         ? 'rgba(255, 255, 255, 0.7)' 
         : theme.colors.card,
       borderBottomWidth: 1,
-      borderBottomColor: Platform.OS === 'web' ? '#e2e8f0' : theme.colors.border, // slate-200/50 for web (matches Promises page)
+      borderBottomColor: isDesktopView ? '#e2e8f0' : theme.colors.border, // slate-200/50 for desktop (matches Promises page)
       ...(Platform.OS === 'web' ? {} : { paddingTop: 0 }),
       ...Platform.select({
         web: {
@@ -680,10 +682,10 @@ const createStyles = (theme: any, insets: { top: number; bottom: number }) =>
       gap: theme.spacing[4],
       paddingHorizontal: theme.spacing[4],
       paddingVertical: theme.spacing[4],
-      maxWidth: Platform.OS === 'web' ? 700 : '100%',
-      alignSelf: Platform.OS === 'web' ? 'center' : 'stretch',
+      maxWidth: isDesktopView ? 700 : '100%',
+      alignSelf: isDesktopView ? 'center' : 'stretch',
       width: '100%',
-      ...(Platform.OS === 'web' && { justifyContent: 'space-between' }),
+      ...(isDesktopView && { justifyContent: 'space-between' }),
     },
     headerLeft: {
       flexDirection: 'row',
@@ -711,8 +713,8 @@ const createStyles = (theme: any, insets: { top: number; bottom: number }) =>
     scrollContent: {
       padding: theme.spacing[8],
       paddingBottom: theme.spacing[4] + (insets?.bottom ?? 0),
-      maxWidth: Platform.OS === 'web' ? 700 : '100%',
-      alignSelf: Platform.OS === 'web' ? 'center' : 'stretch',
+      maxWidth: isDesktopView ? 700 : '100%',
+      alignSelf: isDesktopView ? 'center' : 'stretch',
       width: '100%',
     },
     section: {

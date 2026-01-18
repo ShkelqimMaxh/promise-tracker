@@ -20,6 +20,7 @@ import {
 import { LinearGradient } from 'expo-linear-gradient';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useTheme } from '../theme/ThemeProvider';
+import { useIsMobileView } from '../hooks/useIsMobileView';
 import { useAuth } from '../contexts/AuthContext';
 import { apiService } from '../services/api';
 import { useToast } from '../components/ui/Toast';
@@ -87,6 +88,7 @@ interface PromiseDetail {
 
 export default function PromiseDetail({ promiseId, onNavigate }: PromiseDetailProps) {
   const { theme } = useTheme();
+  const { isDesktopView } = useIsMobileView();
   const { user } = useAuth();
   const insets = useSafeAreaInsets();
   const { showToast } = useToast();
@@ -104,7 +106,7 @@ export default function PromiseDetail({ promiseId, onNavigate }: PromiseDetailPr
     bottom: insets?.bottom ?? 0,
   };
 
-  const styles = createStyles(theme, safeInsets);
+  const styles = createStyles(theme, safeInsets, isDesktopView);
 
   useEffect(() => {
     loadPromiseDetail();
@@ -723,11 +725,11 @@ export default function PromiseDetail({ promiseId, onNavigate }: PromiseDetailPr
   );
 }
 
-const createStyles = (theme: any, insets: { top: number; bottom: number }) =>
+const createStyles = (theme: any, insets: { top: number; bottom: number }, isDesktopView: boolean) =>
   StyleSheet.create({
     container: {
       flex: 1,
-      backgroundColor: Platform.OS === 'web' ? '#f8fafc' : theme.colors.background, // slate-50 for desktop to match Promises/Create
+      backgroundColor: isDesktopView ? '#f8fafc' : theme.colors.background, // slate-50 for desktop to match Promises/Create
       paddingTop: Math.max((insets?.top ?? 0) - 5, 0), // 5px smaller top gap
       paddingBottom: insets?.bottom ?? 0,
     },
@@ -742,7 +744,7 @@ const createStyles = (theme: any, insets: { top: number; bottom: number }) =>
     },
     header: {
       borderBottomWidth: 1,
-      borderBottomColor: Platform.OS === 'web' ? '#e2e8f0' : theme.colors.border,
+      borderBottomColor: isDesktopView ? '#e2e8f0' : theme.colors.border,
       ...Platform.select({
         web: {
           position: 'sticky' as any,

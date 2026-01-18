@@ -17,6 +17,7 @@ import {
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { LinearGradient } from 'expo-linear-gradient';
 import { useTheme } from '../theme/ThemeProvider';
+import { useIsMobileView } from '../hooks/useIsMobileView';
 import { Button } from '../components/ui/Button';
 import { fontFamilies } from '../theme/typography';
 import {
@@ -66,9 +67,10 @@ const stats = [
 export default function Dashboard({ onNavigate }: DashboardProps) {
   const { theme } = useTheme();
   const insets = useSafeAreaInsets();
+  const { isMobileView, isDesktopView } = useIsMobileView();
   // Accent color for badges and highlights
   const accentColor = '#2ECDA9'; // hsl(174, 80%, 40%) equivalent
-  const styles = createStyles(theme, insets);
+  const styles = createStyles(theme, insets, isDesktopView);
 
   // Animation values
   const fadeAnim = useRef(new Animated.Value(0)).current;
@@ -167,7 +169,7 @@ export default function Dashboard({ onNavigate }: DashboardProps) {
             <Text style={styles.logoText}>PromiseTracker</Text>
           </View>
           <View style={styles.headerButtons}>
-            {Platform.OS === 'web' && (
+            {isDesktopView && (
               <Button
                 variant="ghost"
                 onPress={() => onNavigate?.('signin')}
@@ -314,8 +316,8 @@ export default function Dashboard({ onNavigate }: DashboardProps) {
           </View>
         </View>
 
-        {/* Footer - hidden on desktop */}
-        {Platform.OS !== 'web' && (
+        {/* Footer - shown in mobile view (narrow window or native) */}
+        {isMobileView && (
           <View style={styles.footer}>
             <View style={styles.footerContent}>
               <View style={styles.footerTop}>
@@ -356,7 +358,7 @@ export default function Dashboard({ onNavigate }: DashboardProps) {
   );
 }
 
-const createStyles = (theme: any, insets: { top: number }) =>
+const createStyles = (theme: any, insets: { top: number }, isDesktopView: boolean) =>
   StyleSheet.create({
     container: {
       flex: 1,
@@ -369,7 +371,7 @@ const createStyles = (theme: any, insets: { top: number }) =>
       right: 0,
       zIndex: 50,
       paddingTop: Platform.OS === 'ios' ? Math.max(insets.top - 8, 0) : 0,
-      backgroundColor: Platform.OS === 'web' 
+      backgroundColor: isDesktopView 
         ? 'rgba(255, 255, 255, 0.85)' 
         : theme.colors.card,
       ...Platform.select({
@@ -386,8 +388,8 @@ const createStyles = (theme: any, insets: { top: number }) =>
       maxWidth: 1152, // max-w-6xl equivalent
       width: '100%',
       alignSelf: 'center',
-      paddingHorizontal: Platform.OS === 'web' ? theme.spacing[6] : theme.spacing[4],
-      paddingVertical: Platform.OS === 'web' ? theme.spacing[4] : theme.spacing[2],
+      paddingHorizontal: isDesktopView ? theme.spacing[6] : theme.spacing[4],
+      paddingVertical: isDesktopView ? theme.spacing[4] : theme.spacing[2],
       flexDirection: 'row',
       alignItems: 'center',
       justifyContent: 'space-between',
@@ -410,7 +412,7 @@ const createStyles = (theme: any, insets: { top: number }) =>
     },
     logoText: {
       ...theme.typography.h2,
-      fontSize: Platform.OS === 'web' ? theme.fontSizes.xl : theme.fontSizes.lg,
+      fontSize: isDesktopView ? theme.fontSizes.xl : theme.fontSizes.lg,
       fontWeight: theme.fontWeights.bold,
       color: theme.colors.foreground,
       flexShrink: 1,
@@ -422,7 +424,7 @@ const createStyles = (theme: any, insets: { top: number }) =>
       flexShrink: 0,
     },
     headerButton: {
-      minWidth: Platform.OS === 'web' ? 80 : 0,
+      minWidth: isDesktopView ? 80 : 0,
     },
     headerButtonPrimary: {
       borderRadius: 9999, // rounded-full
@@ -440,8 +442,8 @@ const createStyles = (theme: any, insets: { top: number }) =>
       }),
     },
     headerButtonGradient: {
-      paddingHorizontal: Platform.OS === 'web' ? theme.spacing[8] : theme.spacing[6],
-      paddingVertical: Platform.OS === 'web' ? theme.spacing[3] : theme.spacing[2],
+      paddingHorizontal: isDesktopView ? theme.spacing[8] : theme.spacing[6],
+      paddingVertical: isDesktopView ? theme.spacing[3] : theme.spacing[2],
       alignItems: 'center',
       justifyContent: 'center',
       ...Platform.select({
@@ -476,7 +478,7 @@ const createStyles = (theme: any, insets: { top: number }) =>
       flex: 1,
     },
     scrollContent: {
-      paddingTop: (Platform.OS === 'ios' ? Math.max(insets.top - 8, 0) : 0) + (Platform.OS === 'web' ? 80 : 60), // Space for safe area + fixed header
+      paddingTop: (Platform.OS === 'ios' ? Math.max(insets.top - 8, 0) : 0) + (isDesktopView ? 80 : 60), // Space for safe area + fixed header
     },
     heroSection: {
       paddingTop: theme.spacing[32],
@@ -512,12 +514,12 @@ const createStyles = (theme: any, insets: { top: number }) =>
     },
     heroTitle: {
       ...theme.typography.h1Hero,
-      fontSize: Platform.OS === 'web' ? 96 : 48, // text-6xl md:text-8xl
+      fontSize: isDesktopView ? 96 : 48, // text-6xl md:text-8xl
       fontWeight: theme.fontWeights.extraBold,
       textAlign: 'center',
       color: theme.colors.foreground,
       marginBottom: theme.spacing[8],
-      lineHeight: Platform.OS === 'web' ? 86 : 52, // leading-[0.9]
+      lineHeight: isDesktopView ? 86 : 52, // leading-[0.9]
       letterSpacing: -2,
     },
     heroTitleAccent: {
@@ -576,7 +578,7 @@ const createStyles = (theme: any, insets: { top: number }) =>
     },
     featuresTitle: {
       ...theme.typography.h1,
-      fontSize: Platform.OS === 'web' ? 36 : 30,
+      fontSize: isDesktopView ? 36 : 30,
       fontWeight: theme.fontWeights.extraBold,
       textAlign: 'center',
       color: theme.colors.foreground,
@@ -596,9 +598,9 @@ const createStyles = (theme: any, insets: { top: number }) =>
       justifyContent: 'center',
     },
     featureCard: {
-      flex: Platform.OS === 'web' ? 1 : 1,
-      minWidth: Platform.OS === 'web' ? 250 : '100%',
-      maxWidth: Platform.OS === 'web' ? 280 : '100%',
+      flex: 1,
+      minWidth: isDesktopView ? 250 : '100%',
+      maxWidth: isDesktopView ? 280 : '100%',
       padding: theme.spacing[8], // p-8 = 32px
       borderRadius: 24, // rounded-3xl = 24px
       backgroundColor: theme.colors.card,

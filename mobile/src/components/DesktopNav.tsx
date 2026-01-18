@@ -4,8 +4,9 @@
  */
 
 import React from 'react';
-import { View, Text, TouchableOpacity, StyleSheet, Platform } from 'react-native';
+import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
 import { useTheme } from '../theme/ThemeProvider';
+import { useIsMobileView } from '../hooks/useIsMobileView';
 
 interface DesktopNavProps {
   currentRoute: string;
@@ -20,8 +21,9 @@ const items = [
 
 export function DesktopNav({ currentRoute, onNavigate }: DesktopNavProps) {
   const { theme } = useTheme();
+  const { isDesktopView } = useIsMobileView();
 
-  if (Platform.OS !== 'web') {
+  if (!isDesktopView) {
     return null;
   }
 

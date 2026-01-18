@@ -17,6 +17,7 @@ import {
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { LinearGradient } from 'expo-linear-gradient';
 import { useTheme } from '../theme/ThemeProvider';
+import { useIsMobileView } from '../hooks/useIsMobileView';
 import { useAuth } from '../contexts/AuthContext';
 import { apiService } from '../services/api';
 import {
@@ -60,6 +61,7 @@ const achievementIcons: Record<string, React.ElementType> = {
 
 export default function Profile({ onNavigate }: ProfileProps) {
   const { theme } = useTheme();
+  const { isMobileView } = useIsMobileView();
   const { user, logout } = useAuth();
   const insets = useSafeAreaInsets();
   const [loading, setLoading] = useState(true);
@@ -412,7 +414,7 @@ export default function Profile({ onNavigate }: ProfileProps) {
         </View>
       </ScrollView>
 
-      {Platform.OS !== 'web' && (
+      {isMobileView && (
         <BottomNav currentRoute="/profile" onNavigate={onNavigate || (() => {})} />
       )}
     </View>

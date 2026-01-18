@@ -17,6 +17,7 @@ import {
 } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { useTheme } from '../theme/ThemeProvider';
+import { useIsMobileView } from '../hooks/useIsMobileView';
 import { Button } from '../components/ui/Button';
 import { Input } from '../components/ui/Input';
 import { Label } from '../components/ui/Label';
@@ -35,6 +36,7 @@ interface SignInProps {
 
 export default function SignIn({ onNavigate }: SignInProps) {
   const { theme } = useTheme();
+  const { isMobileView, isDesktopView } = useIsMobileView();
   const { login } = useAuth();
   const [isSignUp, setIsSignUp] = useState(false);
   const [email, setEmail] = useState('');
@@ -318,7 +320,7 @@ export default function SignIn({ onNavigate }: SignInProps) {
     setIsSignUp(!isSignUp);
   };
 
-  const styles = createStyles(theme);
+  const styles = createStyles(theme, isDesktopView);
 
   const stats = [
     { value: '87%', label: 'Avg Trust Score' },
@@ -337,8 +339,8 @@ export default function SignIn({ onNavigate }: SignInProps) {
         keyboardShouldPersistTaps="handled"
       >
         <View style={styles.content}>
-          {/* Left Side - Features (hidden on mobile, shown on tablet/desktop) */}
-          {Platform.OS === 'web' && (
+          {/* Left Side - Features (hidden in mobile view, shown in desktop view) */}
+          {isDesktopView && (
             <View style={styles.leftPanel}>
               <LinearGradient
                 colors={['#0f172a', '#1e293b', 'rgba(19, 78, 74, 0.3)']}
@@ -412,8 +414,8 @@ export default function SignIn({ onNavigate }: SignInProps) {
                 },
               ]}
             >
-              {/* Mobile Logo */}
-              {Platform.OS !== 'web' && (
+              {/* Mobile Logo - shown in mobile view (narrow or native) */}
+              {isMobileView && (
                 <View style={styles.mobileLogoContainer}>
                   <View style={styles.mobileLogo}>
                     <Target size={32} color={theme.colors.primary} />
@@ -423,8 +425,8 @@ export default function SignIn({ onNavigate }: SignInProps) {
                 </View>
               )}
 
-              {/* Desktop Title */}
-              {Platform.OS === 'web' && (
+              {/* Desktop Title - shown in desktop view */}
+              {isDesktopView && (
                 <View style={styles.desktopTitleContainer}>
                   <Text style={styles.desktopTitle}>
                     {isSignUp ? 'Start your journey' : 'Welcome back'}
@@ -652,7 +654,7 @@ export default function SignIn({ onNavigate }: SignInProps) {
   );
 }
 
-const createStyles = (theme: any) =>
+const createStyles = (theme: any, isDesktopView: boolean) =>
   StyleSheet.create({
     container: {
       flex: 1,
@@ -666,12 +668,12 @@ const createStyles = (theme: any) =>
     },
     content: {
       flex: 1,
-      flexDirection: Platform.OS === 'web' ? 'row' : 'column',
+      flexDirection: isDesktopView ? 'row' : 'column',
       minHeight: '100%',
     },
     leftPanel: {
       flex: 1,
-      maxWidth: Platform.OS === 'web' ? '50%' : '100%',
+      maxWidth: isDesktopView ? '50%' : '100%',
       backgroundColor: '#0f172a', // slate-900
       position: 'relative',
       overflow: 'hidden',
