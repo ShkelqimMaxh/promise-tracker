@@ -21,16 +21,9 @@ import { useIsMobileView } from '../hooks/useIsMobileView';
 import { useAuth } from '../contexts/AuthContext';
 import { apiService } from '../services/api';
 import {
-  Target,
-  Flame,
-  CheckCircle,
-  BarChart3,
-  Trophy,
-  Clock,
   Settings,
   LogOut,
   ChevronRight,
-  Users,
   Shield,
   TrendingUp,
   ArrowLeft,
@@ -51,13 +44,6 @@ interface UserStats {
   overdue: number;
   streak: number;
 }
-
-const achievementIcons: Record<string, React.ElementType> = {
-  target: Target,
-  flame: Flame,
-  'check-circle': CheckCircle,
-  users: Users,
-};
 
 export default function Profile({ onNavigate }: ProfileProps) {
   const { theme } = useTheme();
@@ -180,34 +166,6 @@ export default function Profile({ onNavigate }: ProfileProps) {
   };
 
   const reputationScore = stats.total > 0 ? Math.round((stats.completed / stats.total) * 100) : 0;
-
-  // Mock achievements - in real app, these would come from backend
-  const achievements = [
-    {
-      id: '1',
-      icon: 'target',
-      title: 'First Promise',
-      description: 'Made your first promise',
-    },
-    {
-      id: '2',
-      icon: 'flame',
-      title: 'Week Warrior',
-      description: '7-day streak',
-    },
-    {
-      id: '3',
-      icon: 'check-circle',
-      title: 'Reliable',
-      description: 'Completed 5 promises',
-    },
-    {
-      id: '4',
-      icon: 'users',
-      title: 'Social Butterfly',
-      description: 'Made 3 social promises',
-    },
-  ];
 
   // Mock recent activity - in real app, this would come from backend
   const formatActivityAction = (status: string): string => {
@@ -343,36 +301,8 @@ export default function Profile({ onNavigate }: ProfileProps) {
             </View>
           </View>
 
-          {/* Right Column: Achievements + Activity */}
+          {/* Right Column: Activity */}
           <View style={styles.rightColumn}>
-            {/* Achievements */}
-            <View style={styles.achievementsCard}>
-              <View style={styles.sectionHeader}>
-                <Trophy size={20} color={theme.colors.mutedForeground} />
-                <Text style={styles.sectionTitle}>Achievements</Text>
-              </View>
-              <View style={styles.achievementsGrid}>
-                {achievements.map((achievement) => {
-                  const Icon = achievementIcons[achievement.icon] || Trophy;
-                  return (
-                    <View key={achievement.id} style={styles.achievementItem}>
-                      <View style={styles.achievementIconContainer}>
-                        <Icon size={16} color={theme.colors.accent} />
-                      </View>
-                      <View style={styles.achievementTextContainer}>
-                        <Text style={styles.achievementTitle} numberOfLines={1}>
-                          {achievement.title.toUpperCase()}
-                        </Text>
-                        <Text style={styles.achievementDescription} numberOfLines={1}>
-                          {achievement.description}
-                        </Text>
-                      </View>
-                    </View>
-                  );
-                })}
-              </View>
-            </View>
-
             {/* Activity */}
             <View style={styles.activityCard}>
               <View style={styles.sectionHeader}>
@@ -638,14 +568,6 @@ const createStyles = (theme: any, insets: { top: number; bottom: number }) =>
       letterSpacing: 1.5,
       fontFamily: fontFamilies.sans,
     },
-    achievementsCard: {
-      padding: theme.spacing[5],
-      ...Platform.select({
-        web: {
-          width: '100%',
-        },
-      }),
-    },
     sectionHeader: {
       flexDirection: 'row',
       alignItems: 'center',
@@ -657,50 +579,6 @@ const createStyles = (theme: any, insets: { top: number; bottom: number }) =>
       fontWeight: theme.fontWeights.semibold,
       color: theme.colors.foreground,
       fontFamily: fontFamilies.display,
-    },
-    achievementsGrid: {
-      flexDirection: 'row',
-      flexWrap: 'wrap',
-      gap: theme.spacing[3],
-    },
-    achievementItem: {
-      flex: 1,
-      minWidth: '45%',
-      padding: theme.spacing[3],
-      borderRadius: 20, // rounded pill
-      backgroundColor: '#ffffff', // white
-      borderWidth: 1,
-      borderColor: '#d1d5db', // light grey
-      flexDirection: 'row',
-      alignItems: 'center',
-      gap: theme.spacing[2],
-    },
-    achievementIconContainer: {
-      width: 32,
-      height: 32,
-      borderRadius: 16,
-      backgroundColor: 'rgba(20, 184, 166, 0.1)', // teal-500/10
-      alignItems: 'center',
-      justifyContent: 'center',
-      flexShrink: 0,
-    },
-    achievementTextContainer: {
-      flex: 1,
-      minWidth: 0,
-      gap: 2,
-    },
-    achievementTitle: {
-      fontSize: 13, // 10 + 3
-      fontWeight: theme.fontWeights.bold,
-      color: theme.colors.foreground,
-      textTransform: 'uppercase',
-      letterSpacing: 0.5,
-      fontFamily: fontFamilies.sans,
-    },
-    achievementDescription: {
-      fontSize: 12, // 9 + 3
-      color: theme.colors.mutedForeground,
-      fontFamily: fontFamilies.sans,
     },
     activityCard: {
       padding: theme.spacing[5],
