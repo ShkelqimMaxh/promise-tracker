@@ -24,6 +24,7 @@ try {
 const ACCESS_TOKEN_KEY = '@promise_tracker:access_token';
 const REFRESH_TOKEN_KEY = '@promise_tracker:refresh_token';
 const USER_KEY = '@promise_tracker:user';
+const THEME_PREFERENCE_KEY = '@promise_tracker:theme_preference';
 
 export const storage = {
   async setAccessToken(token: string): Promise<void> {
@@ -54,5 +55,17 @@ export const storage = {
 
   async clearAll(): Promise<void> {
     await AsyncStorage.multiRemove([ACCESS_TOKEN_KEY, REFRESH_TOKEN_KEY, USER_KEY]);
+  },
+
+  async setThemePreference(preference: 'auto' | 'light' | 'dark'): Promise<void> {
+    await AsyncStorage.setItem(THEME_PREFERENCE_KEY, preference);
+  },
+
+  async getThemePreference(): Promise<'auto' | 'light' | 'dark' | null> {
+    const value = await AsyncStorage.getItem(THEME_PREFERENCE_KEY);
+    if (value === 'light' || value === 'dark' || value === 'auto') {
+      return value;
+    }
+    return null;
   },
 };

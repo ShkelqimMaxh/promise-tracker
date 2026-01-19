@@ -19,6 +19,7 @@ import { LinearGradient } from 'expo-linear-gradient';
 import { useTheme } from '../theme/ThemeProvider';
 import { useIsMobileView } from '../hooks/useIsMobileView';
 import { Button } from '../components/ui/Button';
+import { ThemeToggle } from '../components/ThemeToggle';
 import { fontFamilies } from '../theme/typography';
 import {
   Target,
@@ -169,6 +170,7 @@ export default function Dashboard({ onNavigate }: DashboardProps) {
             <Text style={styles.logoText}>PromiseTracker</Text>
           </View>
           <View style={styles.headerButtons}>
+            <ThemeToggle />
             {isDesktopView && (
               <Button
                 variant="ghost"
@@ -372,7 +374,7 @@ const createStyles = (theme: any, insets: { top: number }, isDesktopView: boolea
       zIndex: 50,
       paddingTop: Platform.OS === 'ios' ? Math.max(insets.top - 8, 0) : 0,
       backgroundColor: isDesktopView 
-        ? 'rgba(255, 255, 255, 0.85)' 
+        ? (theme.mode === 'dark' ? 'rgba(15, 23, 42, 0.85)' : 'rgba(255, 255, 255, 0.85)')
         : theme.colors.card,
       ...Platform.select({
         web: {
@@ -640,7 +642,7 @@ const createStyles = (theme: any, insets: { top: number }, isDesktopView: boolea
     featureDescription: {
       ...theme.typography.body,
       fontSize: theme.fontSizes.base,
-      color: '#64748b', // slate-500
+      color: theme.colors.mutedForeground,
       lineHeight: 24, // leading-relaxed
       fontWeight: theme.fontWeights.medium,
     },

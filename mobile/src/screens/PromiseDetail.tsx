@@ -25,6 +25,7 @@ import { useAuth } from '../contexts/AuthContext';
 import { apiService } from '../services/api';
 import { useToast } from '../components/ui/Toast';
 import { DesktopNav } from '../components/DesktopNav';
+import { ThemeToggle } from '../components/ThemeToggle';
 import {
   ArrowLeft,
   Calendar,
@@ -349,6 +350,7 @@ export default function PromiseDetail({ promiseId, onNavigate }: PromiseDetailPr
           </View>
           <DesktopNav currentRoute={`/promise/${promiseId}`} onNavigate={onNavigate || (() => {})} />
           <View style={styles.headerActions}>
+            <ThemeToggle />
             {canDecline && (
               <TouchableOpacity style={styles.headerButton} onPress={handleDeclinePromise}>
                 <XCircle size={18} color={theme.colors.destructive} />
@@ -729,7 +731,7 @@ const createStyles = (theme: any, insets: { top: number; bottom: number }, isDes
   StyleSheet.create({
     container: {
       flex: 1,
-      backgroundColor: isDesktopView ? '#f8fafc' : theme.colors.background, // slate-50 for desktop to match Promises/Create
+      backgroundColor: theme.colors.background,
       paddingTop: Math.max((insets?.top ?? 0) - 5, 0), // 5px smaller top gap
       paddingBottom: insets?.bottom ?? 0,
     },
@@ -744,13 +746,13 @@ const createStyles = (theme: any, insets: { top: number; bottom: number }, isDes
     },
     header: {
       borderBottomWidth: 1,
-      borderBottomColor: isDesktopView ? '#e2e8f0' : theme.colors.border,
+      borderBottomColor: theme.colors.border,
       ...Platform.select({
         web: {
           position: 'sticky' as any,
           top: 0,
           zIndex: 50,
-          backgroundColor: 'rgba(255, 255, 255, 0.7)',
+          backgroundColor: theme.mode === 'dark' ? 'rgba(15, 23, 42, 0.7)' : 'rgba(255, 255, 255, 0.7)',
           backdropFilter: 'blur(20px)',
           WebkitBackdropFilter: 'blur(20px)',
         },
@@ -830,9 +832,9 @@ const createStyles = (theme: any, insets: { top: number; bottom: number }, isDes
     promiseInfoBlock: {
       ...Platform.select({
         web: {
-          backgroundColor: '#ffffff',
+          backgroundColor: theme.colors.card,
           borderWidth: 1,
-          borderColor: '#e2e8f0',
+          borderColor: theme.colors.border,
           borderRadius: theme.borderRadius.xl,
           padding: theme.spacing[5],
         },
@@ -903,15 +905,9 @@ const createStyles = (theme: any, insets: { top: number; bottom: number }, isDes
       borderRadius: theme.borderRadius.xl,
       borderWidth: 1,
       borderColor: theme.colors.border,
-      backgroundColor: '#F8F8F8',
+      backgroundColor: theme.colors.card,
       marginBottom: theme.spacing[8],
       overflow: 'hidden',
-      ...Platform.select({
-        web: {
-          backgroundColor: '#ffffff',
-          borderColor: '#e2e8f0',
-        },
-      }),
     },
     progressCardContent: {
       padding: theme.spacing[6],
@@ -931,7 +927,7 @@ const createStyles = (theme: any, insets: { top: number; bottom: number }, isDes
     progressLabel: {
       ...theme.typography.h4,
       fontWeight: theme.fontWeights.semibold,
-      color: '#2F3C5E',
+      color: theme.colors.foreground,
     },
     progressValueContainer: {
       flexDirection: 'row',
@@ -941,13 +937,13 @@ const createStyles = (theme: any, insets: { top: number; bottom: number }, isDes
       ...theme.typography.h1,
       fontSize: 30,
       fontWeight: theme.fontWeights.bold,
-      color: '#6B4E3B',
+      color: theme.colors.foreground,
     },
     progressValuePercent: {
       ...theme.typography.h1,
       fontSize: 30,
       fontWeight: theme.fontWeights.bold,
-      color: '#A66E3A',
+      color: theme.colors.accent,
     },
     progressBarContainer: {
       marginTop: 0,
@@ -955,7 +951,7 @@ const createStyles = (theme: any, insets: { top: number; bottom: number }, isDes
     progressBarBackground: {
       height: 12,
       borderRadius: theme.borderRadius.full,
-      backgroundColor: '#CED2D9',
+      backgroundColor: theme.colors.muted,
       overflow: 'hidden',
     },
     progressBarFill: {
@@ -1028,12 +1024,6 @@ const createStyles = (theme: any, insets: { top: number; bottom: number }, isDes
       borderWidth: 1,
       borderColor: theme.colors.border,
       backgroundColor: theme.colors.card,
-      ...Platform.select({
-        web: {
-          backgroundColor: '#ffffff',
-          borderColor: '#d1d5db',
-        },
-      }),
     },
     milestoneCardCompleted: {
       backgroundColor: theme.colors.success + '0D',
@@ -1108,12 +1098,6 @@ const createStyles = (theme: any, insets: { top: number; bottom: number }, isDes
       borderWidth: 1,
       borderColor: theme.colors.border,
       backgroundColor: theme.colors.card,
-      ...Platform.select({
-        web: {
-          backgroundColor: '#ffffff',
-          borderColor: '#d1d5db',
-        },
-      }),
     },
     noteHeader: {
       flexDirection: 'row',
@@ -1162,12 +1146,6 @@ const createStyles = (theme: any, insets: { top: number; bottom: number }, isDes
       borderWidth: 1,
       borderColor: theme.colors.border,
       backgroundColor: theme.colors.card,
-      ...Platform.select({
-        web: {
-          backgroundColor: '#ffffff',
-          borderColor: '#d1d5db',
-        },
-      }),
     },
     emptyNotesText: {
       ...theme.typography.body,

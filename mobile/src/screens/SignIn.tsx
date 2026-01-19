@@ -24,6 +24,7 @@ import { Label } from '../components/ui/Label';
 import { Target, Shield, Sparkles, ArrowRight, Crosshair } from 'lucide-react-native';
 import { apiService, ApiError } from '../services/api';
 import { useAuth } from '../contexts/AuthContext';
+import { ThemeToggle } from '../components/ThemeToggle';
 import * as Google from 'expo-auth-session/providers/google';
 import * as WebBrowser from 'expo-web-browser';
 
@@ -405,6 +406,9 @@ export default function SignIn({ onNavigate }: SignInProps) {
 
           {/* Right Side - Form */}
           <View style={styles.rightPanel}>
+            <View style={styles.themeToggleContainer}>
+              <ThemeToggle />
+            </View>
             <Animated.View
               style={[
                 styles.formContainer,
@@ -799,6 +803,13 @@ const createStyles = (theme: any, isDesktopView: boolean) =>
       justifyContent: 'center',
       alignItems: 'center',
       padding: theme.spacing[8],
+      position: 'relative',
+    },
+    themeToggleContainer: {
+      position: 'absolute',
+      top: theme.spacing[4],
+      right: theme.spacing[4],
+      zIndex: 10,
     },
     formContainer: {
       width: '100%',

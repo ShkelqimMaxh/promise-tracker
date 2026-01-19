@@ -41,6 +41,7 @@ import {
 } from 'lucide-react-native';
 import { Button } from '../components/ui/Button';
 import { useToast } from '../components/ui/Toast';
+import { ThemeToggle } from '../components/ThemeToggle';
 import { fontFamilies } from '../theme/typography';
 import { BottomNav } from '../components/BottomNav';
 
@@ -527,6 +528,7 @@ export default function Promises({ onNavigate }: PromisesProps) {
                 <Text style={styles.newPromiseButtonText}>New Promise</Text>
               </LinearGradient>
             </TouchableOpacity>
+            <ThemeToggle />
             <TouchableOpacity
               style={styles.avatarButton}
               onPress={() => onNavigate?.('profile')}
@@ -769,7 +771,7 @@ const createStyles = (theme: any, insets: { top: number; bottom: number }, isDes
   StyleSheet.create({
     container: {
       flex: 1,
-      backgroundColor: '#f8fafc', // slate-50 (matches web bg-[#f8fafc])
+      backgroundColor: theme.colors.background,
       paddingTop: Math.max((insets?.top ?? 0) - 5, 0), // 5px smaller top gap
       paddingBottom: isDesktopView ? (insets?.bottom ?? 0) : (insets?.bottom ?? 0) + 60, // No extra gap for bottom nav on desktop
     },
@@ -779,10 +781,10 @@ const createStyles = (theme: any, insets: { top: number; bottom: number }, isDes
     },
     header: {
       backgroundColor: isDesktopView 
-        ? 'rgba(255, 255, 255, 0.7)' 
+        ? (theme.mode === 'dark' ? 'rgba(15, 23, 42, 0.7)' : 'rgba(255, 255, 255, 0.7)')
         : theme.colors.card,
       borderBottomWidth: 1,
-      borderBottomColor: '#e2e8f0', // slate-200/50
+      borderBottomColor: theme.colors.border,
       ...(Platform.OS === 'web' ? {} : { paddingTop: 0 }),
       ...Platform.select({
         web: {
@@ -816,7 +818,7 @@ const createStyles = (theme: any, insets: { top: number; bottom: number }, isDes
       width: 40,
       height: 40,
       borderRadius: theme.borderRadius.xl,
-      backgroundColor: '#0f172a',
+      backgroundColor: theme.mode === 'dark' ? theme.colors.accent : '#0f172a',
       alignItems: 'center',
       justifyContent: 'center',
     },
@@ -1156,7 +1158,7 @@ const createStyles = (theme: any, insets: { top: number; bottom: number }, isDes
     },
     tabsList: {
       flexDirection: 'row',
-      backgroundColor: 'rgb(241, 245, 249)', // slate-100
+      backgroundColor: theme.colors.muted,
       borderRadius: 12, // rounded-xl = 12px (reduced from 20)
       padding: 8, // 8px padding
       marginVertical: theme.spacing[2], // Add vertical margin
@@ -1189,7 +1191,7 @@ const createStyles = (theme: any, insets: { top: number; bottom: number }, isDes
       }),
     },
     tabActive: {
-      backgroundColor: '#ffffff',
+      backgroundColor: theme.colors.card,
       ...Platform.select({
         web: {
           boxShadow: '0 1px 2px rgba(0, 0, 0, 0.05)',
@@ -1293,10 +1295,10 @@ const createStyles = (theme: any, insets: { top: number; bottom: number }, isDes
       borderColor:'rgba(20, 184, 170, 0.4)'
     },
     promiseCardCompleted: {
-      backgroundColor: '#EBF8F6',
+      backgroundColor: theme.mode === 'dark' ? 'rgba(20, 184, 166, 0.1)' : '#EBF8F6',
     },
     promiseCardNotMade: {
-      backgroundColor: '#fef2f2', // red-50, fail-state tint
+      backgroundColor: theme.mode === 'dark' ? 'rgba(239, 68, 68, 0.1)' : '#fef2f2', // red-50, fail-state tint
     },
     promiseCardNotMadeHovered: {
       borderColor: 'rgba(239, 68, 68, 0.5)',
@@ -1375,7 +1377,7 @@ const createStyles = (theme: any, insets: { top: number; bottom: number }, isDes
     daysLeftText: {
       fontSize: 10,
       fontWeight: theme.fontWeights.bold,
-      color: '#94a3b8', // slate-400
+      color: theme.colors.mutedForeground,
       textTransform: 'uppercase',
       letterSpacing: 1.2,
     },
@@ -1442,7 +1444,7 @@ const createStyles = (theme: any, insets: { top: number; bottom: number }, isDes
     progressBar: {
       height: 6, // h-1.5 = 6px
       borderRadius: theme.borderRadius.full,
-      backgroundColor: '#f1f5f9', // slate-100
+      backgroundColor: theme.colors.muted,
       overflow: 'hidden',
     },
     progressBarFill: {
@@ -1461,7 +1463,7 @@ const createStyles = (theme: any, insets: { top: number; bottom: number }, isDes
       alignItems: 'center',
       paddingTop: theme.spacing[4], // pt-4 = 16px
       borderTopWidth: 1,
-      borderTopColor: '#f8fafc', // slate-50
+      borderTopColor: theme.colors.border,
     },
     promiseCardFooterLeft: {
       flexDirection: 'row',
@@ -1471,7 +1473,7 @@ const createStyles = (theme: any, insets: { top: number; bottom: number }, isDes
     promiseCardFooterText: {
       fontSize: 12,
       fontWeight: theme.fontWeights.medium,
-      color: '#64748b', // slate-500
+      color: theme.colors.mutedForeground,
     },
     viewButton: {
       paddingHorizontal: theme.spacing[4],
@@ -1506,10 +1508,10 @@ const createStyles = (theme: any, insets: { top: number; bottom: number }, isDes
       padding: theme.spacing[1],
       minWidth: 200,
       borderWidth: 1,
-      borderColor: '#e2e8f0', // grey border
+      borderColor: theme.colors.border,
       ...Platform.select({
         web: {
-          boxShadow: '0 4px 6px rgba(0, 0, 0, 0.1)',
+          boxShadow: theme.mode === 'dark' ? '0 4px 6px rgba(0, 0, 0, 0.3)' : '0 4px 6px rgba(0, 0, 0, 0.1)',
         },
         default: {
           shadowColor: '#000',

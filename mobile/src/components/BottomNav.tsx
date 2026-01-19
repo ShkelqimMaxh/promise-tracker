@@ -77,7 +77,9 @@ function createStyles(theme: any, insets: { bottom: number }) {
       left: 0,
       right: 0,
       zIndex: 50,
-      backgroundColor: Platform.OS === 'web' ? 'rgba(255, 255, 255, 0.85)' : theme.colors.card,
+      backgroundColor: Platform.OS === 'web' 
+        ? (theme.mode === 'dark' ? 'rgba(15, 23, 42, 0.85)' : 'rgba(255, 255, 255, 0.85)')
+        : theme.colors.card,
       borderTopWidth: 1,
       borderTopColor: theme.colors.border,
       paddingBottom: (insets?.bottom ?? 0) - 10, // -10px to move footer up
@@ -110,7 +112,7 @@ function createStyles(theme: any, insets: { bottom: number }) {
     activeIndicator: {
       position: 'absolute',
       inset: 0,
-      backgroundColor: '#EAF6F5', // Light teal background for active tab
+      backgroundColor: theme.mode === 'dark' ? 'rgba(20, 184, 166, 0.15)' : '#EAF6F5', // Light teal background for active tab
       borderRadius: theme.borderRadius.xl,
     },
     label: {

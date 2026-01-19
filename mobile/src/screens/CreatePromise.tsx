@@ -44,6 +44,7 @@ import {
 import { Button } from '../components/ui/Button';
 import { Input } from '../components/ui/Input';
 import { DesktopNav } from '../components/DesktopNav';
+import { ThemeToggle } from '../components/ThemeToggle';
 
 interface CreatePromiseProps {
   onNavigate?: (route: string) => void;
@@ -288,7 +289,10 @@ export default function CreatePromise({ onNavigate }: CreatePromiseProps) {
             </TouchableOpacity>
             <Text style={styles.headerTitle}>Make a Promise</Text>
           </View>
-          <DesktopNav currentRoute="/create" onNavigate={onNavigate || (() => {})} />
+          <View style={styles.headerRight}>
+            <DesktopNav currentRoute="/create" onNavigate={onNavigate || (() => {})} />
+            <ThemeToggle />
+          </View>
         </View>
       </View>
 
@@ -655,16 +659,16 @@ const createStyles = (theme: any, insets: { top: number; bottom: number }, isDes
   StyleSheet.create({
     container: {
       flex: 1,
-      backgroundColor: isDesktopView ? '#f8fafc' : theme.colors.background, // slate-50 for desktop (matches Promises page)
+      backgroundColor: theme.colors.background,
       paddingTop: Math.max((insets?.top ?? 0) - 5, 0), // 5px smaller top gap
       paddingBottom: insets?.bottom ?? 0,
     },
     header: {
       backgroundColor: isDesktopView 
-        ? 'rgba(255, 255, 255, 0.7)' 
+        ? (theme.mode === 'dark' ? 'rgba(15, 23, 42, 0.7)' : 'rgba(255, 255, 255, 0.7)')
         : theme.colors.card,
       borderBottomWidth: 1,
-      borderBottomColor: isDesktopView ? '#e2e8f0' : theme.colors.border, // slate-200/50 for desktop (matches Promises page)
+      borderBottomColor: theme.colors.border,
       ...(Platform.OS === 'web' ? {} : { paddingTop: 0 }),
       ...Platform.select({
         web: {
@@ -688,6 +692,11 @@ const createStyles = (theme: any, insets: { top: number; bottom: number }, isDes
       ...(isDesktopView && { justifyContent: 'space-between' }),
     },
     headerLeft: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      gap: theme.spacing[4],
+    },
+    headerRight: {
       flexDirection: 'row',
       alignItems: 'center',
       gap: theme.spacing[4],

@@ -29,6 +29,7 @@ import {
   ArrowLeft,
 } from 'lucide-react-native';
 import { Button } from '../components/ui/Button';
+import { ThemeToggle } from '../components/ThemeToggle';
 import { BottomNav } from '../components/BottomNav';
 import { DesktopNav } from '../components/DesktopNav';
 import { fontFamilies } from '../theme/typography';
@@ -242,14 +243,17 @@ export default function Profile({ onNavigate }: ProfileProps) {
             <Text style={styles.headerTitle}>PROFILE</Text>
           </View>
           <DesktopNav currentRoute="/profile" onNavigate={onNavigate || (() => {})} />
-          <TouchableOpacity
-            style={styles.settingsButton}
-            onPress={() => {
-              // TODO: Navigate to settings
-            }}
-          >
-            <Settings size={20} color={theme.colors.foreground} />
-          </TouchableOpacity>
+          <View style={styles.headerRight}>
+            <ThemeToggle />
+            <TouchableOpacity
+              style={styles.settingsButton}
+              onPress={() => {
+                // TODO: Navigate to settings
+              }}
+            >
+              <Settings size={20} color={theme.colors.foreground} />
+            </TouchableOpacity>
+          </View>
         </View>
       </View>
 
@@ -404,6 +408,11 @@ const createStyles = (theme: any, insets: { top: number; bottom: number }) =>
       textTransform: 'uppercase',
       letterSpacing: 1,
       fontFamily: fontFamilies.display,
+    },
+    headerRight: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      gap: theme.spacing[2],
     },
     settingsButton: {
       width: 40,
@@ -597,9 +606,9 @@ const createStyles = (theme: any, insets: { top: number; bottom: number }) =>
       gap: theme.spacing[3],
       padding: theme.spacing[3],
       borderRadius: theme.borderRadius.lg,
-      backgroundColor: '#ffffff', // white
+      backgroundColor: theme.colors.card,
       borderWidth: 1,
-      borderColor: '#d1d5db', // light grey
+      borderColor: theme.colors.border,
     },
     activityDot: {
       width: 8,
@@ -624,7 +633,7 @@ const createStyles = (theme: any, insets: { top: number; bottom: number }) =>
       lineHeight: 18, // 15 + 3
       fontWeight: '700',
       fontFamily: fontFamilies.sans,
-      color: '#90A1B9',
+      color: theme.colors.mutedForeground,
     },
     logoutButton: {
       paddingHorizontal: theme.spacing[3],
