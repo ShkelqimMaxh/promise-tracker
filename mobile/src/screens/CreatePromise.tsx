@@ -457,6 +457,7 @@ export default function CreatePromise({ onNavigate }: CreatePromiseProps) {
                       fontFamily: fontFamilies.button,
                       color: theme.colors.foreground,
                       backgroundColor: 'transparent',
+                      colorScheme: theme.mode === 'dark' ? 'dark' : 'light',
                       height: '100%',
                       width: '100%',
                       cursor: 'pointer',
