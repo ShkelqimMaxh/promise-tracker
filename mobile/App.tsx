@@ -7,7 +7,9 @@ import { ActivityIndicator, View, StyleSheet, Platform } from 'react-native';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { ThemeProvider, useTheme } from './src/theme/ThemeProvider';
 import { AuthProvider, useAuth } from './src/contexts/AuthContext';
+import { AchievementProvider } from './src/contexts/AchievementContext';
 import { ToastProvider } from './src/components/ui/Toast';
+import { AchievementPopup } from './src/components/AchievementPopup';
 import Dashboard from './src/screens/Dashboard';
 import SignIn from './src/screens/SignIn';
 import Promises from './src/screens/Promises';
@@ -196,9 +198,12 @@ export default function App() {
     <SafeAreaProvider>
       <ThemeProvider initialMode="auto">
         <AuthProvider>
-          <ToastProvider>
-            <AppContent />
-          </ToastProvider>
+          <AchievementProvider>
+            <ToastProvider>
+              <AppContent />
+              <AchievementPopup />
+            </ToastProvider>
+          </AchievementProvider>
         </AuthProvider>
       </ThemeProvider>
     </SafeAreaProvider>

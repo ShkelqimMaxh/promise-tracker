@@ -41,6 +41,7 @@ import {
 } from 'lucide-react-native';
 import { Button } from '../components/ui/Button';
 import { useToast } from '../components/ui/Toast';
+import { useAchievements } from '../contexts/AchievementContext';
 import { ThemeToggle } from '../components/ThemeToggle';
 import { fontFamilies } from '../theme/typography';
 import { BottomNav } from '../components/BottomNav';
@@ -350,6 +351,7 @@ export default function Promises({ onNavigate }: PromisesProps) {
   const { isMobileView, isDesktopView } = useIsMobileView();
   const { user } = useAuth();
   const { showToast } = useToast();
+  const { checkAndUnlockAchievement } = useAchievements();
   const insets = useSafeAreaInsets();
   const [promises, setPromises] = useState<Promise[]>([]);
   const [filter, setFilter] = useState<'all' | 'personal' | 'social'>('all');
@@ -374,7 +376,27 @@ export default function Promises({ onNavigate }: PromisesProps) {
       const response = await apiService.request('/promises', {
         method: 'GET',
       }) as { promises?: Promise[] };
-      setPromises(response.promises || []);
+      const promisesList = response.promises || [];
+      setPromises(promisesList);
+      
+      // Check for count-based achievements
+      const totalCount = promisesList.length;
+      const completedCount = promisesList.filter(p => p.status === 'completed').length;
+      const socialCompletedCount = promisesList.filter(
+        p => p.status === 'completed' && p.promisee_id && p.promisee_id !== p.user_id
+      ).length;
+      
+      // Promise creation achievements
+      if (totalCount >= 5) await checkAndUnlockAchievement('five_promises');
+      if (totalCount >= 10) await checkAndUnlockAchievement('ten_promises');
+      if (totalCount >= 25) await checkAndUnlockAchievement('twenty_five_promises');
+      
+      // Promise completion achievements
+      if (completedCount >= 5) await checkAndUnlockAchievement('five_completed');
+      if (completedCount >= 10) await checkAndUnlockAchievement('ten_completed');
+      
+      // Social completion achievements
+      if (socialCompletedCount >= 5) await checkAndUnlockAchievement('five_social_completed');
     } catch (error) {
       console.error('Failed to load promises:', error);
     } finally {

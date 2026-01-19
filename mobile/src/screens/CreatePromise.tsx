@@ -28,6 +28,7 @@ try {
 import { useTheme } from '../theme/ThemeProvider';
 import { useIsMobileView } from '../hooks/useIsMobileView';
 import { useAuth } from '../contexts/AuthContext';
+import { useAchievements } from '../contexts/AchievementContext';
 import { apiService } from '../services/api';
 import { useToast } from '../components/ui/Toast';
 import { fontFamilies } from '../theme/typography';
@@ -58,6 +59,7 @@ export default function CreatePromise({ onNavigate }: CreatePromiseProps) {
   const { user } = useAuth();
   const insets = useSafeAreaInsets();
   const { showToast } = useToast();
+  const { checkAndUnlockAchievement, hasAchievement } = useAchievements();
   const [type, setType] = useState<PromiseType>('personal');
   const [title, setTitle] = useState('');
   const [description, setDescription] = useState('');
@@ -254,15 +256,32 @@ export default function CreatePromise({ onNavigate }: CreatePromiseProps) {
         milestones: milestonesData.length > 0 ? milestonesData : undefined,
       };
 
-      await apiService.request('/promises', {
+      const response = await apiService.request('/promises', {
         method: 'POST',
         body: JSON.stringify(promiseData),
       });
 
-      // Show success toast and navigate back
+      // Show success toast
       showToast('Promise created successfully!', 'success');
+
+      // Check for achievements
+      // First promise achievement
+      await checkAndUnlockAchievement('first_promise');
+
+      // Social promise achievement
+      if (type === 'social' && promisee_id) {
+        await checkAndUnlockAchievement('first_social_promise');
+      }
+
+      // Mentor achievement
+      if (mentor_id) {
+        await checkAndUnlockAchievement('first_mentor');
+      }
+
+      // Check promise count achievements (would need to fetch count from API)
+      // For now, we'll check these on the Promises screen
       
-      // Navigate back after a short delay to show the toast
+      // Navigate back after a short delay to show the toast/achievement
       setTimeout(() => {
         onNavigate?.('promises');
       }, 500);
@@ -712,6 +731,7 @@ const createStyles = (theme: any, insets: { top: number; bottom: number }, isDes
       fontSize: theme.fontSizes.xl,
       fontWeight: theme.fontWeights.semibold,
       fontFamily: fontFamilies.button,
+      color: theme.colors.foreground,
     },
     keyboardAvoidingView: {
       flex: 1,
@@ -734,6 +754,7 @@ const createStyles = (theme: any, insets: { top: number; bottom: number }, isDes
       fontWeight: theme.fontWeights.semibold,
       fontFamily: fontFamilies.button,
       marginBottom: theme.spacing[4],
+      color: theme.colors.foreground,
     },
     formSection: {
       gap: theme.spacing[5],

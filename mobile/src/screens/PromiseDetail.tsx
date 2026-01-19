@@ -22,6 +22,7 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useTheme } from '../theme/ThemeProvider';
 import { useIsMobileView } from '../hooks/useIsMobileView';
 import { useAuth } from '../contexts/AuthContext';
+import { useAchievements } from '../contexts/AchievementContext';
 import { apiService } from '../services/api';
 import { useToast } from '../components/ui/Toast';
 import { DesktopNav } from '../components/DesktopNav';
@@ -93,6 +94,7 @@ export default function PromiseDetail({ promiseId, onNavigate }: PromiseDetailPr
   const { user } = useAuth();
   const insets = useSafeAreaInsets();
   const { showToast } = useToast();
+  const { checkAndUnlockAchievement } = useAchievements();
   const [loading, setLoading] = useState(true);
   const [promise, setPromise] = useState<PromiseDetail | null>(null);
   const [milestones, setMilestones] = useState<Milestone[]>([]);
@@ -176,6 +178,12 @@ export default function PromiseDetail({ promiseId, onNavigate }: PromiseDetailPr
         newCompleted ? 'Milestone completed!' : 'Milestone unmarked',
         'success'
       );
+
+      // Check for milestone achievements when completing
+      if (newCompleted) {
+        await checkAndUnlockAchievement('first_milestone');
+        // Could also check for ten_milestones, fifty_milestones based on count
+      }
     } catch (error: any) {
       console.error('Failed to toggle milestone:', error);
       showToast(error.error || 'Failed to update milestone', 'error');
@@ -304,6 +312,15 @@ export default function PromiseDetail({ promiseId, onNavigate }: PromiseDetailPr
       if (response.promise) {
         setPromise(response.promise);
         showToast('Promise marked as completed!', 'success');
+        
+        // Check for completion achievements
+        await checkAndUnlockAchievement('first_completed');
+        
+        // Check if this was a social promise
+        if (promise?.promisee_id && promise.promisee_id !== promise.user_id) {
+          // Could track social completions for five_social_completed
+        }
+        
         onNavigate?.('promises');
       }
     } catch (error: any) {
@@ -787,6 +804,7 @@ const createStyles = (theme: any, insets: { top: number; bottom: number }, isDes
       flex: 1,
       marginHorizontal: theme.spacing[2],
       fontWeight: theme.fontWeights.semibold,
+      color: theme.colors.foreground,
     },
     headerActions: {
       flexDirection: 'row',
