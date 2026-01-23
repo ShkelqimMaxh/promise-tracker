@@ -85,6 +85,22 @@ export default function SignIn({ onNavigate }: SignInProps) {
         ? { webClientId: process.env.EXPO_PUBLIC_GOOGLE_CLIENT_ID || 'not-configured-placeholder.apps.googleusercontent.com' }
         : {});
 
+  // Determine redirect URI for web
+  const getRedirectUri = () => {
+    if (Platform.OS !== 'web') return undefined;
+    
+    // For production, use the actual domain
+    // For development, use localhost
+    if (typeof window !== 'undefined') {
+      const origin = window.location.origin;
+      // Expo web typically uses /--/expo-auth-session as the redirect path
+      const redirectUri = `${origin}/--/expo-auth-session`;
+      console.log('🔗 Using redirect URI:', redirectUri);
+      return redirectUri;
+    }
+    return undefined;
+  };
+
   const [request, response, promptAsync] = Google.useAuthRequest(
     hookConfig,
     { 
@@ -94,6 +110,7 @@ export default function SignIn({ onNavigate }: SignInProps) {
         responseType: 'id_token',
         scopes: ['openid', 'profile', 'email'],
         extraParams: {},
+        redirectUri: getRedirectUri(),
       } : {})
     }
   );
