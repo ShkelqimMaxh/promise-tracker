@@ -68,6 +68,7 @@ export default function CreatePromise({ onNavigate }: CreatePromiseProps) {
   const [mentorEmail, setMentorEmail] = useState('');
   const [milestones, setMilestones] = useState<string[]>([]);
   const [loading, setLoading] = useState(false);
+  const [focusedField, setFocusedField] = useState<string | null>(null);
   
   // Validation errors
   const [errors, setErrors] = useState<{
@@ -406,11 +407,16 @@ export default function CreatePromise({ onNavigate }: CreatePromiseProps) {
               Why does this matter? <Text style={styles.optional}>(optional)</Text>
             </Text>
             <TextInput
-              style={styles.textArea}
+              style={[
+                styles.textArea,
+                focusedField === 'description' && styles.textAreaFocused,
+              ]}
               placeholder="This is important to me because..."
               placeholderTextColor={theme.colors.mutedForeground}
               value={description}
               onChangeText={setDescription}
+              onFocus={() => setFocusedField('description')}
+              onBlur={() => setFocusedField(null)}
               multiline
               numberOfLines={4}
             />
@@ -422,6 +428,7 @@ export default function CreatePromise({ onNavigate }: CreatePromiseProps) {
               <View style={styles.dateInputWrapper}>
                 <View style={[
                   styles.dateInputContainer,
+                  focusedField === 'deadline' && styles.dateInputContainerFocused,
                   errors.deadline && styles.dateInputContainerError,
                 ]}>
                   <Calendar size={20} color={theme.colors.mutedForeground} />
@@ -431,6 +438,8 @@ export default function CreatePromise({ onNavigate }: CreatePromiseProps) {
                     type="date"
                     min={new Date().toISOString().split('T')[0]}
                     value={deadline ? formatDate(deadline) : ''}
+                    onFocus={() => setFocusedField('deadline')}
+                    onBlur={() => setFocusedField(null)}
                     onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
                       const value = e.target.value;
                       if (value) {
@@ -475,9 +484,11 @@ export default function CreatePromise({ onNavigate }: CreatePromiseProps) {
               <TouchableOpacity
                 style={[
                   styles.dateInputContainer,
+                  focusedField === 'deadline' && styles.dateInputContainerFocused,
                   errors.deadline && styles.dateInputContainerError,
                 ]}
                 onPress={() => {
+                  setFocusedField('deadline');
                   if (DateTimePicker) {
                     setTempDate(deadline || new Date());
                     setShowDatePicker(true);
@@ -895,7 +906,7 @@ const createStyles = (theme: any, insets: { top: number; bottom: number }, isDes
       minHeight: 100,
       borderRadius: theme.borderRadius.medium,
       borderWidth: 1,
-      borderColor: theme.colors.primary, // Use teal border
+      borderColor: theme.colors.border, // Gray by default
       backgroundColor: theme.colors.card,
       paddingHorizontal: theme.spacing[3],
       paddingVertical: theme.spacing[3],
@@ -916,6 +927,9 @@ const createStyles = (theme: any, insets: { top: number; bottom: number }, isDes
         },
       }),
     },
+    textAreaFocused: {
+      borderColor: theme.colors.primary, // Teal on focus
+    },
     dateInputWrapper: {
       position: 'relative',
       ...Platform.select({
@@ -928,7 +942,7 @@ const createStyles = (theme: any, insets: { top: number; bottom: number }, isDes
       flexDirection: 'row',
       alignItems: 'center',
       borderWidth: 1,
-      borderColor: theme.colors.primary, // Use teal border
+      borderColor: theme.colors.border, // Gray by default
       borderRadius: theme.borderRadius.medium,
       paddingLeft: theme.spacing[3],
       paddingRight: theme.spacing[3],
@@ -945,6 +959,9 @@ const createStyles = (theme: any, insets: { top: number; bottom: number }, isDes
           boxShadow: 'none',
         },
       }),
+    },
+    dateInputContainerFocused: {
+      borderColor: theme.colors.primary, // Teal on focus
     },
     dateInputContainerError: {
       borderColor: theme.colors.destructive,

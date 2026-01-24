@@ -54,7 +54,9 @@ const createStyles = (theme: any, isFocused: boolean, error?: string) =>
       borderWidth: 1,
       borderColor: error 
         ? theme.colors.destructive 
-        : theme.colors.primary, // Always use teal border
+        : isFocused 
+        ? theme.colors.primary // Teal on focus
+        : (theme.colors.input || theme.colors.border), // Gray by default
       backgroundColor: theme.colors.card,
       paddingHorizontal: theme.spacing[3],
       ...theme.typography.body,
