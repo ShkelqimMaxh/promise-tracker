@@ -450,6 +450,8 @@ export default function CreatePromise({ onNavigate }: CreatePromiseProps) {
                       flex: 1,
                       border: 'none',
                       outline: 'none',
+                      outlineWidth: 0,
+                      outlineStyle: 'none',
                       padding: 0,
                       margin: 0,
                       fontSize: theme.fontSizes.base,
@@ -463,6 +465,8 @@ export default function CreatePromise({ onNavigate }: CreatePromiseProps) {
                       cursor: 'pointer',
                       WebkitAppearance: 'none',
                       MozAppearance: 'textfield',
+                      boxShadow: 'none',
+                      borderStyle: 'none',
                     } as React.CSSProperties}
                   />
                 </View>
@@ -741,14 +745,28 @@ const createStyles = (theme: any, insets: { top: number; bottom: number }, isDes
       flex: 1,
     },
     scrollContent: {
-      padding: theme.spacing[8],
+      padding: theme.spacing[6],
       paddingBottom: theme.spacing[4] + (insets?.bottom ?? 0),
       maxWidth: isDesktopView ? 700 : '100%',
       alignSelf: isDesktopView ? 'center' : 'stretch',
       width: '100%',
+      gap: theme.spacing[6],
     },
     section: {
       marginBottom: theme.spacing[8],
+      padding: theme.spacing[5],
+      backgroundColor: theme.colors.card,
+      borderRadius: theme.borderRadius.xl,
+      ...Platform.select({
+        web: {
+          boxShadow: theme.mode === 'dark' 
+            ? '0 2px 8px rgba(0, 0, 0, 0.3)' 
+            : '0 2px 8px rgba(0, 0, 0, 0.05)',
+        },
+        default: {
+          ...theme.shadows.sm,
+        },
+      }),
     },
     sectionTitle: {
       fontSize: theme.fontSizes.base,
@@ -758,8 +776,21 @@ const createStyles = (theme: any, insets: { top: number; bottom: number }, isDes
       color: theme.colors.foreground,
     },
     formSection: {
-      gap: theme.spacing[5],
+      gap: theme.spacing[6],
       marginBottom: theme.spacing[8],
+      padding: theme.spacing[5],
+      backgroundColor: theme.colors.card,
+      borderRadius: theme.borderRadius.xl,
+      ...Platform.select({
+        web: {
+          boxShadow: theme.mode === 'dark' 
+            ? '0 2px 8px rgba(0, 0, 0, 0.3)' 
+            : '0 2px 8px rgba(0, 0, 0, 0.05)',
+        },
+        default: {
+          ...theme.shadows.sm,
+        },
+      }),
     },
     typeContainer: {
       flexDirection: 'row',
@@ -777,6 +808,12 @@ const createStyles = (theme: any, insets: { top: number; bottom: number }, isDes
         web: {
           cursor: 'pointer',
           transition: 'all 0.2s',
+          boxShadow: theme.mode === 'dark' 
+            ? '0 2px 4px rgba(0, 0, 0, 0.2)' 
+            : '0 2px 4px rgba(0, 0, 0, 0.05)',
+        },
+        default: {
+          ...theme.shadows.sm,
         },
       }),
     },
@@ -819,7 +856,7 @@ const createStyles = (theme: any, insets: { top: number; bottom: number }, isDes
       color: theme.colors.mutedForeground,
     },
     fieldContainer: {
-      marginBottom: 0,
+      marginBottom: theme.spacing[1],
     },
     label: {
       fontSize: theme.fontSizes.base,
@@ -858,8 +895,8 @@ const createStyles = (theme: any, insets: { top: number; bottom: number }, isDes
       minHeight: 100,
       borderRadius: theme.borderRadius.medium,
       borderWidth: 1,
-      borderColor: theme.colors.border,
-      backgroundColor: 'transparent',
+      borderColor: theme.colors.primary, // Use teal border
+      backgroundColor: theme.colors.card,
       paddingHorizontal: theme.spacing[3],
       paddingVertical: theme.spacing[3],
       fontSize: theme.fontSizes.base,
@@ -867,6 +904,17 @@ const createStyles = (theme: any, insets: { top: number; bottom: number }, isDes
       fontFamily: fontFamilies.button,
       color: theme.colors.foreground,
       textAlignVertical: 'top',
+      ...Platform.select({
+        web: {
+          outline: 'none',
+          outlineWidth: 0,
+          outlineStyle: 'none',
+          borderStyle: 'solid',
+          boxShadow: 'none',
+          WebkitAppearance: 'none',
+          MozAppearance: 'none',
+        },
+      }),
     },
     dateInputWrapper: {
       position: 'relative',
@@ -880,16 +928,21 @@ const createStyles = (theme: any, insets: { top: number; bottom: number }, isDes
       flexDirection: 'row',
       alignItems: 'center',
       borderWidth: 1,
-      borderColor: theme.colors.border,
+      borderColor: theme.colors.primary, // Use teal border
       borderRadius: theme.borderRadius.medium,
       paddingLeft: theme.spacing[3],
       paddingRight: theme.spacing[3],
-      backgroundColor: 'transparent',
+      backgroundColor: theme.colors.card,
       height: 48,
       gap: theme.spacing[3],
       ...Platform.select({
         web: {
           position: 'relative',
+          outline: 'none',
+          outlineWidth: 0,
+          outlineStyle: 'none',
+          borderStyle: 'solid',
+          boxShadow: 'none',
         },
       }),
     },
@@ -1035,7 +1088,7 @@ const createStyles = (theme: any, insets: { top: number; bottom: number }, isDes
       justifyContent: 'center',
       gap: theme.spacing[2],
       paddingVertical: theme.spacing[3],
-      borderWidth: 1,
+      borderWidth: 1.5,
       ...Platform.select({
         web: {
           borderStyle: 'dashed',
@@ -1044,21 +1097,22 @@ const createStyles = (theme: any, insets: { top: number; bottom: number }, isDes
           borderStyle: 'solid',
         },
       }),
-      borderColor: theme.colors.border,
+      borderColor: theme.colors.primary,
       borderRadius: theme.borderRadius.medium,
       width: '100%',
+      backgroundColor: theme.mode === 'dark' 
+        ? 'rgba(20, 184, 166, 0.05)' 
+        : 'rgba(20, 184, 166, 0.02)',
     },
     addMilestoneText: {
       fontSize: theme.fontSizes.base,
-      fontWeight: theme.fontWeights.regular,
+      fontWeight: theme.fontWeights.medium,
       fontFamily: fontFamilies.button,
-      color: theme.colors.foreground,
+      color: theme.colors.primary,
     },
     submitContainer: {
-      marginTop: theme.spacing[4],
-      paddingTop: theme.spacing[4],
-      borderTopWidth: 1,
-      borderTopColor: theme.colors.border,
+      marginTop: theme.spacing[2],
+      paddingTop: theme.spacing[6],
     },
     submitButtonContainer: {
       borderRadius: theme.borderRadius.button,

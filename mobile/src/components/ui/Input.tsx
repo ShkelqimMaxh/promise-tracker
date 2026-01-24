@@ -22,36 +22,54 @@ export const Input: React.FC<InputProps> = ({
   ...props
 }) => {
   const { theme } = useTheme();
-  const styles = createStyles(theme);
+  const [isFocused, setIsFocused] = React.useState(false);
+  const styles = createStyles(theme, isFocused, error);
 
   return (
     <TextInput
       style={[
         styles.input,
-        error && styles.inputError,
         style,
       ]}
       placeholderTextColor={placeholderTextColor || theme.colors.mutedForeground}
+      onFocus={(e) => {
+        setIsFocused(true);
+        props.onFocus?.(e);
+      }}
+      onBlur={(e) => {
+        setIsFocused(false);
+        props.onBlur?.(e);
+      }}
       {...props}
     />
   );
 };
 
-const createStyles = (theme: any) =>
+const createStyles = (theme: any, isFocused: boolean, error?: string) =>
   StyleSheet.create({
     input: {
       height: 48, // h-12
       width: '100%',
       borderRadius: theme.borderRadius.input || theme.borderRadius.medium,
       borderWidth: 1,
-      borderColor: theme.colors.input || theme.colors.border,
-      backgroundColor: 'transparent',
+      borderColor: error 
+        ? theme.colors.destructive 
+        : theme.colors.primary, // Always use teal border
+      backgroundColor: theme.colors.card,
       paddingHorizontal: theme.spacing[3],
       ...theme.typography.body,
       color: theme.colors.foreground,
       fontSize: theme.fontSizes.base,
-    },
-    inputError: {
-      borderColor: theme.colors.destructive,
+      ...Platform.select({
+        web: {
+          outline: 'none',
+          outlineWidth: 0,
+          outlineStyle: 'none',
+          borderStyle: 'solid',
+          boxShadow: 'none',
+          WebkitAppearance: 'none',
+          MozAppearance: 'none',
+        },
+      }),
     },
   });
