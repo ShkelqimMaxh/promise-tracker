@@ -58,8 +58,8 @@ function AppContent() {
         protectedRoutes.some(route => path === route || path === `${route}/`) ||
         path.startsWith('/promise/');
 
-      // If logged in and trying to access signin, redirect to promises
-      if (isAuthenticated && (path === '/signin' || path === '/signin/')) {
+      // If logged in and trying to access signin/signup, redirect to promises
+      if (isAuthenticated && (path === '/signin' || path === '/signin/' || path === '/signup' || path === '/signup/')) {
         setCurrentRoute('/promises');
         if (Platform.OS === 'web' && typeof window !== 'undefined') {
           window.history.pushState({}, '', '/promises');
@@ -110,7 +110,7 @@ function AppContent() {
   };
 
   // Route rendering
-  if (currentRoute === '/signin' || currentRoute === '/signin/') {
+  if (currentRoute === '/signin' || currentRoute === '/signin/' || currentRoute === '/signup' || currentRoute === '/signup/') {
     return (
       <>
         <SignIn onNavigate={handleNavigate} />

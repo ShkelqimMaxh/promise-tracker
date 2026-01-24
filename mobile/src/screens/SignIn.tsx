@@ -160,6 +160,32 @@ export default function SignIn({ onNavigate }: SignInProps) {
     }).start();
   }, [isSignUp]);
 
+  // Handle URL parameters on web (for email invitations)
+  useEffect(() => {
+    if (Platform.OS === 'web' && typeof window !== 'undefined') {
+      const path = window.location.pathname;
+      const searchParams = new URLSearchParams(window.location.search);
+      
+      // If path is /signup, switch to signup mode
+      if (path === '/signup' || path === '/signup/') {
+        setIsSignUp(true);
+      }
+      
+      // Pre-fill email if provided in URL
+      const emailParam = searchParams.get('email');
+      if (emailParam) {
+        setEmail(decodeURIComponent(emailParam));
+      }
+      
+      // Store promise ID if provided (we'll use it after registration)
+      const promiseParam = searchParams.get('promise');
+      if (promiseParam) {
+        // Store in sessionStorage to use after registration
+        sessionStorage.setItem('pendingPromiseId', promiseParam);
+      }
+    }
+  }, []);
+
   // Test backend connection on mount
   useEffect(() => {
     const testConnection = async () => {
@@ -219,6 +245,19 @@ export default function SignIn({ onNavigate }: SignInProps) {
 
       // Store tokens and user data using auth context
       await login(response.user, response.access_token, response.refresh_token);
+
+      // Check if there's a pending promise ID from email invitation
+      if (Platform.OS === 'web' && typeof window !== 'undefined') {
+        const pendingPromiseId = sessionStorage.getItem('pendingPromiseId');
+        if (pendingPromiseId) {
+          sessionStorage.removeItem('pendingPromiseId');
+          // Navigate to the specific promise
+          if (onNavigate) {
+            onNavigate(`promise/${pendingPromiseId}`);
+          }
+          return;
+        }
+      }
 
       // Navigate to promises page
       if (onNavigate) {
