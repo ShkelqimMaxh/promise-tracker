@@ -33,6 +33,13 @@ function AppContent() {
 
   const [currentRoute, setCurrentRoute] = useState<string>(getInitialRoute);
 
+  // Set document title on web
+  useEffect(() => {
+    if (Platform.OS === 'web' && typeof document !== 'undefined') {
+      document.title = 'MyPromises - Keep your word. Build trust.';
+    }
+  }, []);
+
   // Sync route with URL on web and handle auth-based redirects
   useEffect(() => {
     if (Platform.OS === 'web' && typeof window !== 'undefined') {

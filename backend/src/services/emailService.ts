@@ -75,9 +75,11 @@ export class EmailService {
     promiseDescription?: string,
     promiseId?: string
   ): Promise<void> {
-    const signUpUrl = process.env.APP_URL 
-      ? `${process.env.APP_URL}/signup?email=${encodeURIComponent(promiseeEmail)}&promise=${promiseId || ''}`
-      : '#';
+    // Use static app URL
+    const appUrl = 'http://mypromises.app';
+    const signUpUrl = `${appUrl}/signup?email=${encodeURIComponent(promiseeEmail)}${promiseId ? `&promise=${promiseId}` : ''}`;
+    
+    console.log(`📧 Generated signup URL: ${signUpUrl}`);
     
     const html = `
       <!DOCTYPE html>
@@ -208,9 +210,11 @@ If you didn't expect this email, you can safely ignore it.
     promiseDescription?: string,
     promiseId?: string
   ): Promise<void> {
-    const signUpUrl = process.env.APP_URL 
-      ? `${process.env.APP_URL}/signup?email=${encodeURIComponent(mentorEmail)}&promise=${promiseId || ''}`
-      : '#';
+    // Use static app URL
+    const appUrl = 'http://mypromises.app';
+    const signUpUrl = `${appUrl}/signup?email=${encodeURIComponent(mentorEmail)}${promiseId ? `&promise=${promiseId}` : ''}`;
+    
+    console.log(`📧 Generated signup URL: ${signUpUrl}`);
     
     const html = `
       <!DOCTYPE html>
@@ -281,15 +285,21 @@ If you didn't expect this email, you can safely ignore it.
                       </p>
                       
                       <!-- CTA Button -->
-                      <table role="presentation" style="width: 100%; border-collapse: collapse; margin: 0 0 32px 0;">
+                      <table role="presentation" style="width: 100%; border-collapse: collapse; margin: 0 0 24px 0;">
                         <tr>
                           <td align="center" style="padding: 0;">
-                            <a href="${signUpUrl}" style="display: inline-block; background: linear-gradient(135deg, #14b8a6 0%, #06b6d4 100%); color: #ffffff; text-decoration: none; padding: 14px 32px; border-radius: 8px; font-weight: 600; font-size: 16px; box-shadow: 0 4px 12px rgba(20, 184, 166, 0.3);">
+                            <a href="${signUpUrl}" target="_blank" rel="noopener noreferrer" style="display: inline-block; background: linear-gradient(135deg, #14b8a6 0%, #06b6d4 100%); color: #ffffff; text-decoration: none; padding: 14px 32px; border-radius: 8px; font-weight: 600; font-size: 16px; box-shadow: 0 4px 12px rgba(20, 184, 166, 0.3);">
                               Join ${APP_NAME} Now
                             </a>
                           </td>
                         </tr>
                       </table>
+                      
+                      <!-- Fallback URL (in case link doesn't work) -->
+                      <p style="margin: 0 0 32px 0; color: #94a3b8; font-size: 13px; line-height: 1.5; text-align: center; word-break: break-all;">
+                        Or copy and paste this link in your browser:<br>
+                        <a href="${signUpUrl}" style="color: #14b8a6; text-decoration: underline;">${signUpUrl}</a>
+                      </p>
                       
                       <p style="margin: 0; color: #94a3b8; font-size: 14px; line-height: 1.5;">
                         If you're already a member, you can view this promise in your dashboard.

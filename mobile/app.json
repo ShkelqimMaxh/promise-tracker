@@ -1,7 +1,7 @@
 {
   "expo": {
-    "name": "promise-tracker-mobile",
-    "slug": "promise-tracker-mobile",
+    "name": "MyPromises",
+    "slug": "mypromises-mobile",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
@@ -26,7 +26,13 @@
       "package": "com.promisetracker.mobile"
     },
     "web": {
-      "bundler": "metro"
+      "bundler": "metro",
+      "name": "MyPromises",
+      "shortName": "MyPromises",
+      "lang": "en",
+      "scope": "/",
+      "themeColor": "#14b8a6",
+      "backgroundColor": "#f5f7f8"
     }
   }
 }
