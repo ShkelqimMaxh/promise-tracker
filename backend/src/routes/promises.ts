@@ -145,6 +145,15 @@ router.post('/', async (req: AuthenticatedRequest, res: Response) => {
 
     const data: CreatePromiseRequest = req.body;
 
+    // Log the incoming request for debugging
+    console.log('📝 Creating promise with data:', {
+      title: data.title,
+      promisee_id: data.promisee_id,
+      promisee_email: data.promisee_email,
+      mentor_id: data.mentor_id,
+      mentor_email: data.mentor_email,
+    });
+
     if (!data.title) {
       res.status(400).json({ error: 'Title is required' });
       return;
@@ -238,6 +247,7 @@ router.post('/', async (req: AuthenticatedRequest, res: Response) => {
       }
       
       if (emailToSend) {
+        console.log(`📨 Sending promise invitation email to: ${emailToSend}`);
         await EmailService.sendPromiseInvitation(
           emailToSend,
           req.user.name,
@@ -245,6 +255,8 @@ router.post('/', async (req: AuthenticatedRequest, res: Response) => {
           data.description,
           promise.id
         );
+      } else {
+        console.warn('⚠️ No email address available for promisee (promisee_email and promisee_id both missing)');
       }
     }
 
@@ -261,6 +273,7 @@ router.post('/', async (req: AuthenticatedRequest, res: Response) => {
       }
       
       if (emailToSend) {
+        console.log(`📨 Sending mentorship invitation email to: ${emailToSend}`);
         await EmailService.sendMentorshipInvitation(
           emailToSend,
           req.user.name,
@@ -268,6 +281,8 @@ router.post('/', async (req: AuthenticatedRequest, res: Response) => {
           data.description,
           promise.id
         );
+      } else {
+        console.warn('⚠️ No email address available for mentor (mentor_email and mentor_id both missing)');
       }
     }
 

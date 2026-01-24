@@ -23,24 +23,44 @@ export class EmailService {
    */
   private static async sendEmail(to: string, subject: string, html: string, text?: string): Promise<void> {
     if (!SENDGRID_API_KEY) {
-      console.warn('SendGrid not configured, skipping email to:', to);
+      console.error('❌ SendGrid not configured! SENDGRID_API_KEY is missing. Email NOT sent to:', to);
+      console.error('   Please set SENDGRID_API_KEY environment variable in Railway');
+      return;
+    }
+
+    if (!FROM_EMAIL) {
+      console.error('❌ FROM_EMAIL not configured! Email NOT sent to:', to);
       return;
     }
 
     try {
-      await sgMail.send({
+      console.log(`📧 Attempting to send email to: ${to} from: ${FROM_EMAIL}`);
+      const result = await sgMail.send({
         to,
         from: FROM_EMAIL,
         subject,
         text: text || html.replace(/<[^>]*>/g, ''), // Strip HTML for text version
         html,
       });
-      console.log(`✓ Email sent to ${to}`);
+      console.log(`✓ Email successfully sent to ${to}`);
+      console.log(`  Status code: ${result[0]?.statusCode || 'unknown'}`);
     } catch (error: any) {
-      console.error('Error sending email:', error);
+      console.error('❌ Error sending email to:', to);
+      console.error('   Error message:', error.message);
+      
       // Don't throw - we don't want email failures to break promise creation
       if (error.response) {
-        console.error('SendGrid error details:', error.response.body);
+        console.error('   SendGrid status code:', error.response.statusCode);
+        console.error('   SendGrid error details:', JSON.stringify(error.response.body, null, 2));
+        
+        // Common SendGrid errors
+        if (error.response.body?.errors) {
+          error.response.body.errors.forEach((err: any) => {
+            console.error(`   - ${err.message} (field: ${err.field || 'N/A'})`);
+          });
+        }
+      } else {
+        console.error('   Full error:', error);
       }
     }
   }
