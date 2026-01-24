@@ -1,4 +1,4 @@
-# Promise Tracker Mobile
+# MyPromises Mobile
 
 React Native mobile app for tracking promises.
 

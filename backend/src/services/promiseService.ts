@@ -11,7 +11,7 @@ export class PromiseService {
    * Create a new promise
    */
   static async createPromise(userId: string, data: CreatePromiseRequest): Promise<PromiseRecord> {
-    const { title, description, deadline, promisee_id, mentor_id } = data;
+    const { title, description, deadline, promisee_id, mentor_id, promisee_email, mentor_email } = data;
 
     // Validate and parse deadline
     let deadlineDate: Date | null = null;
@@ -22,14 +22,20 @@ export class PromiseService {
       }
     }
 
+    // Normalize emails to lowercase
+    const normalizedPromiseeEmail = promisee_email ? promisee_email.toLowerCase().trim() : null;
+    const normalizedMentorEmail = mentor_email ? mentor_email.toLowerCase().trim() : null;
+
     const result = await pool.query(
-      `INSERT INTO promises (user_id, promisee_id, mentor_id, title, description, deadline)
-       VALUES ($1, $2, $3, $4, $5, $6)
+      `INSERT INTO promises (user_id, promisee_id, mentor_id, promisee_email, mentor_email, title, description, deadline)
+       VALUES ($1, $2, $3, $4, $5, $6, $7, $8)
        RETURNING *`,
       [
         userId,
         promisee_id || null,
         mentor_id || null,
+        normalizedPromiseeEmail,
+        normalizedMentorEmail,
         title,
         description || null,
         deadlineDate,
@@ -49,15 +55,15 @@ export class PromiseService {
         p.*,
         promisee.id as promisee_user_id,
         promisee.name as promisee_name,
-        promisee.email as promisee_email,
+        promisee.email as promisee_user_email,
         mentor.id as mentor_user_id,
         mentor.name as mentor_name,
-        mentor.email as mentor_email
+        mentor.email as mentor_user_email
        FROM promises p
        LEFT JOIN users promisee ON p.promisee_id = promisee.id
        LEFT JOIN users mentor ON p.mentor_id = mentor.id
        WHERE p.id = $1
-       AND (p.user_id = $2 OR p.promisee_id = $2 OR p.mentor_id = $2)`,
+       AND (p.user_id = $2 OR p.promisee_id = $2 OR p.mentor_id = $2 OR p.promisee_email = (SELECT email FROM users WHERE id = $2) OR p.mentor_email = (SELECT email FROM users WHERE id = $2))`,
       [id, userId]
     );
 
@@ -91,6 +97,8 @@ export class PromiseService {
       user_id: promise.user_id,
       promisee_id: promise.promisee_id,
       mentor_id: promise.mentor_id,
+      promisee_email: promise.promisee_email,
+      mentor_email: promise.mentor_email,
       title: promise.title,
       description: promise.description,
       deadline: promise.deadline,
@@ -101,6 +109,12 @@ export class PromiseService {
         ? {
             id: promise.promisee_user_id,
             name: promise.promisee_name,
+            email: promise.promisee_user_email || promise.promisee_email,
+          }
+        : promise.promisee_email
+        ? {
+            id: '', // No user ID yet
+            name: promise.promisee_email.split('@')[0], // Use email prefix as name
             email: promise.promisee_email,
           }
         : undefined,
@@ -108,6 +122,12 @@ export class PromiseService {
         ? {
             id: promise.mentor_user_id,
             name: promise.mentor_name,
+            email: promise.mentor_user_email || promise.mentor_email,
+          }
+        : promise.mentor_email
+        ? {
+            id: '', // No user ID yet
+            name: promise.mentor_email.split('@')[0], // Use email prefix as name
             email: promise.mentor_email,
           }
         : undefined,
@@ -340,6 +360,32 @@ export class PromiseService {
        WHERE status = 'ongoing' 
        AND deadline IS NOT NULL 
        AND deadline < NOW()`
+    );
+  }
+
+  /**
+   * Link email addresses to user_id when a user joins
+   * This is called after user registration/login to connect promises to new users
+   */
+  static async linkEmailToUserId(userId: string, email: string): Promise<void> {
+    const normalizedEmail = email.toLowerCase().trim();
+    
+    // Update promises where promisee_email matches
+    await pool.query(
+      `UPDATE promises 
+       SET promisee_id = $1 
+       WHERE promisee_email = $2 
+       AND promisee_id IS NULL`,
+      [userId, normalizedEmail]
+    );
+
+    // Update promises where mentor_email matches
+    await pool.query(
+      `UPDATE promises 
+       SET mentor_id = $1 
+       WHERE mentor_email = $2 
+       AND mentor_id IS NULL`,
+      [userId, normalizedEmail]
     );
   }
 }

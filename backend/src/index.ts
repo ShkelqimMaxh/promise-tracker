@@ -23,7 +23,7 @@ app.use(express.json());
 
 // Routes
 app.get('/', (req, res) => {
-  res.json({ message: 'Promise Tracker API', version: '1.0.0' });
+  res.json({ message: 'MyPromises API', version: '1.0.0' });
 });
 
 // Health check endpoint

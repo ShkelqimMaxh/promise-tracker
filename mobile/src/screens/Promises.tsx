@@ -494,7 +494,7 @@ export default function Promises({ onNavigate }: PromisesProps) {
       await Notifications.scheduleNotificationAsync({
         content: {
           title: 'Test Notification',
-          body: 'This is a test notification from Promise Tracker!',
+          body: 'This is a test notification from MyPromises!',
           sound: true,
           priority: Notifications.AndroidNotificationPriority.HIGH,
         },

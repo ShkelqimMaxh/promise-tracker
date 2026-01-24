@@ -6,6 +6,7 @@
 import bcrypt from 'bcryptjs';
 import { pool } from '../config/database';
 import { User, RegisterRequest } from '../types/auth';
+import { PromiseService } from './promiseService';
 
 const SALT_ROUNDS = 10;
 
@@ -27,7 +28,12 @@ export class UserService {
       [email.toLowerCase().trim(), name.trim(), passwordHash]
     );
 
-    return result.rows[0];
+    const user = result.rows[0];
+
+    // Link any promises that were created with this email address
+    await PromiseService.linkEmailToUserId(user.id, user.email);
+
+    return user;
   }
 
   /**
@@ -99,7 +105,12 @@ export class UserService {
          RETURNING id, email, name, password_hash, google_id, created_at, updated_at`,
         [googleId, email.toLowerCase().trim()]
       );
-      return result.rows[0];
+      const user = result.rows[0];
+      
+      // Link any promises that were created with this email address
+      await PromiseService.linkEmailToUserId(user.id, user.email);
+      
+      return user;
     }
 
     // Create new user
@@ -110,7 +121,12 @@ export class UserService {
       [email.toLowerCase().trim(), name.trim(), googleId]
     );
 
-    return result.rows[0];
+    const user = result.rows[0];
+
+    // Link any promises that were created with this email address
+    await PromiseService.linkEmailToUserId(user.id, user.email);
+
+    return user;
   }
 
   /**

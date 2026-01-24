@@ -1,4 +1,4 @@
-# Promise Tracker
+# MyPromises
 
 A full-stack application for tracking promises and commitments.
 

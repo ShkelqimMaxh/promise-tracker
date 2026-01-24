@@ -129,6 +129,8 @@ export async function initializeDatabase() {
         user_id UUID NOT NULL REFERENCES users(id) ON DELETE CASCADE,
         promisee_id UUID REFERENCES users(id) ON DELETE SET NULL,
         mentor_id UUID REFERENCES users(id) ON DELETE SET NULL,
+        promisee_email VARCHAR(255),
+        mentor_email VARCHAR(255),
         title VARCHAR(500) NOT NULL,
         description TEXT,
         deadline TIMESTAMP,
@@ -234,6 +236,45 @@ export async function initializeDatabase() {
       console.log('✓ Added not_made to promise status');
     } catch (error: any) {
       console.log('Note: Could not migrate promise status (may already include not_made):', error.message);
+    }
+
+    // Migration: add email fields to promises table (for existing DBs)
+    try {
+      const checkPromiseeEmail = await pool.query(`
+        SELECT column_name 
+        FROM information_schema.columns 
+        WHERE table_name = 'promises' AND column_name = 'promisee_email'
+      `);
+      
+      if (checkPromiseeEmail.rows.length === 0) {
+        await pool.query(`
+          ALTER TABLE promises ADD COLUMN promisee_email VARCHAR(255)
+        `);
+        console.log('✓ Added promisee_email column');
+      }
+
+      const checkMentorEmail = await pool.query(`
+        SELECT column_name 
+        FROM information_schema.columns 
+        WHERE table_name = 'promises' AND column_name = 'mentor_email'
+      `);
+      
+      if (checkMentorEmail.rows.length === 0) {
+        await pool.query(`
+          ALTER TABLE promises ADD COLUMN mentor_email VARCHAR(255)
+        `);
+        console.log('✓ Added mentor_email column');
+      }
+
+      // Create indexes for email lookups
+      await pool.query(`
+        CREATE INDEX IF NOT EXISTS idx_promises_promisee_email ON promises(promisee_email) WHERE promisee_email IS NOT NULL
+      `);
+      await pool.query(`
+        CREATE INDEX IF NOT EXISTS idx_promises_mentor_email ON promises(mentor_email) WHERE mentor_email IS NOT NULL
+      `);
+    } catch (error: any) {
+      console.log('Note: Could not add email columns to promises:', error.message);
     }
 
     await pool.query(`

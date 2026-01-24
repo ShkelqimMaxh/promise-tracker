@@ -203,8 +203,9 @@ export default function CreatePromise({ onNavigate }: CreatePromiseProps) {
           order_index: index,
         }));
 
-      // Look up promisee by email if social type
+      // Try to look up promisee by email if social type (optional - will use email if not found)
       let promisee_id: string | undefined = undefined;
+      let promisee_email: string | undefined = undefined;
       if (type === 'social' && promiseeEmail.trim()) {
         try {
           const promiseeResponse = await apiService.request(`/auth/lookup?email=${encodeURIComponent(promiseeEmail.trim())}`, {
@@ -213,20 +214,19 @@ export default function CreatePromise({ onNavigate }: CreatePromiseProps) {
           if (promiseeResponse.user && promiseeResponse.user.id) {
             promisee_id = promiseeResponse.user.id;
           } else {
-            showToast('Could not find user with that email address', 'error');
-            setLoading(false);
-            return;
+            // User doesn't exist, will use email instead
+            promisee_email = promiseeEmail.trim();
           }
         } catch (error: any) {
-          console.error('Failed to lookup promisee:', error);
-          showToast(error.error || 'Could not find user with that email address', 'error');
-          setLoading(false);
-          return;
+          // User doesn't exist (404) or other error - will use email instead
+          console.log('User not found, will send email invitation:', promiseeEmail.trim());
+          promisee_email = promiseeEmail.trim();
         }
       }
 
-      // Look up mentor by email if provided
+      // Try to look up mentor by email if provided (optional - will use email if not found)
       let mentor_id: string | undefined = undefined;
+      let mentor_email: string | undefined = undefined;
       if (mentorEmail.trim()) {
         try {
           const mentorResponse = await apiService.request(`/auth/lookup?email=${encodeURIComponent(mentorEmail.trim())}`, {
@@ -235,15 +235,13 @@ export default function CreatePromise({ onNavigate }: CreatePromiseProps) {
           if (mentorResponse.user && mentorResponse.user.id) {
             mentor_id = mentorResponse.user.id;
           } else {
-            showToast('Could not find mentor with that email address', 'error');
-            setLoading(false);
-            return;
+            // User doesn't exist, will use email instead
+            mentor_email = mentorEmail.trim();
           }
         } catch (error: any) {
-          console.error('Failed to lookup mentor:', error);
-          showToast(error.error || 'Could not find mentor with that email address', 'error');
-          setLoading(false);
-          return;
+          // User doesn't exist (404) or other error - will use email instead
+          console.log('Mentor not found, will send email invitation:', mentorEmail.trim());
+          mentor_email = mentorEmail.trim();
         }
       }
 
@@ -252,7 +250,9 @@ export default function CreatePromise({ onNavigate }: CreatePromiseProps) {
         description: description.trim() || undefined,
         deadline: formattedDeadline,
         promisee_id,
+        promisee_email,
         mentor_id,
+        mentor_email,
         milestones: milestonesData.length > 0 ? milestonesData : undefined,
       };
 
@@ -268,13 +268,13 @@ export default function CreatePromise({ onNavigate }: CreatePromiseProps) {
       // First promise achievement
       await checkAndUnlockAchievement('first_promise');
 
-      // Social promise achievement
-      if (type === 'social' && promisee_id) {
+      // Social promise achievement (check if promisee exists or email was provided)
+      if (type === 'social' && (promisee_id || promisee_email)) {
         await checkAndUnlockAchievement('first_social_promise');
       }
 
-      // Mentor achievement
-      if (mentor_id) {
+      // Mentor achievement (check if mentor exists or email was provided)
+      if (mentor_id || mentor_email) {
         await checkAndUnlockAchievement('first_mentor');
       }
 

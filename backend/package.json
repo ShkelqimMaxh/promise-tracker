@@ -1,7 +1,7 @@
 {
-  "name": "promise-tracker-backend",
+  "name": "mypromises-backend",
   "version": "1.0.0",
-  "description": "Backend API for Promise Tracker",
+  "description": "Backend API for MyPromises",
   "main": "dist/index.js",
   "scripts": {
     "build": "tsc",
@@ -20,7 +20,8 @@
     "jsonwebtoken": "^9.0.2",
     "uuid": "^9.0.1",
     "google-auth-library": "^9.0.0",
-    "typescript": "^5.3.3"
+    "typescript": "^5.3.3",
+    "@sendgrid/mail": "^8.1.0"
   },
   "devDependencies": {
     "@types/express": "^4.17.21",

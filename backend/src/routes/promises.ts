@@ -9,6 +9,7 @@ import { MilestoneService } from '../services/milestoneService';
 import { NoteService } from '../services/noteService';
 import { NotificationService } from '../services/notificationService';
 import { UserService } from '../services/userService';
+import { EmailService } from '../services/emailService';
 import {
   CreatePromiseRequest,
   UpdatePromiseRequest,
@@ -158,40 +159,109 @@ router.post('/', async (req: AuthenticatedRequest, res: Response) => {
       }
     }
 
-    // Validate promisee_id exists if provided
-    if (data.promisee_id) {
-      const promisee = await UserService.findById(data.promisee_id);
+    // Validate email format if provided
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (data.promisee_email && !emailRegex.test(data.promisee_email)) {
+      res.status(400).json({ error: 'Invalid promisee email format' });
+      return;
+    }
+    if (data.mentor_email && !emailRegex.test(data.mentor_email)) {
+      res.status(400).json({ error: 'Invalid mentor email format' });
+      return;
+    }
+
+    // Look up users by email if emails are provided (but don't fail if they don't exist)
+    let promisee_id = data.promisee_id;
+    let mentor_id = data.mentor_id;
+    let promisee_email = data.promisee_email;
+    let mentor_email = data.mentor_email;
+
+    // If promisee_email is provided, try to find the user
+    if (promisee_email && !promisee_id) {
+      const promisee = await UserService.findByEmail(promisee_email);
+      if (promisee) {
+        promisee_id = promisee.id;
+        promisee_email = undefined; // Don't store email if user exists
+      }
+    }
+
+    // If mentor_email is provided, try to find the user
+    if (mentor_email && !mentor_id) {
+      const mentor = await UserService.findByEmail(mentor_email);
+      if (mentor) {
+        mentor_id = mentor.id;
+        mentor_email = undefined; // Don't store email if user exists
+      }
+    }
+
+    // Validate promisee_id exists if provided (shouldn't happen, but double-check)
+    if (promisee_id) {
+      const promisee = await UserService.findById(promisee_id);
       if (!promisee) {
         res.status(400).json({ error: 'Invalid promisee_id' });
         return;
       }
     }
 
-    // Validate mentor_id exists if provided
-    if (data.mentor_id) {
-      const mentor = await UserService.findById(data.mentor_id);
+    // Validate mentor_id exists if provided (shouldn't happen, but double-check)
+    if (mentor_id) {
+      const mentor = await UserService.findById(mentor_id);
       if (!mentor) {
         res.status(400).json({ error: 'Invalid mentor_id' });
         return;
       }
     }
 
-    // Create promise
-    const promise = await PromiseService.createPromise(req.user.id, data);
+    // Create promise with resolved IDs and emails
+    const promiseData = {
+      ...data,
+      promisee_id,
+      mentor_id,
+      promisee_email,
+      mentor_email,
+    };
+    const promise = await PromiseService.createPromise(req.user.id, promiseData);
 
-    // Create notifications after promise is created
-    if (data.promisee_id) {
+    // Send emails to promisee/mentor (even if they don't exist as users)
+    if (promisee_email || promisee_id) {
+      const emailToSend = promisee_email || (promisee_id ? (await UserService.findById(promisee_id))?.email : null);
+      if (emailToSend) {
+        await EmailService.sendPromiseInvitation(
+          emailToSend,
+          req.user.name,
+          data.title,
+          data.description,
+          promise.id
+        );
+      }
+    }
+
+    if (mentor_email || mentor_id) {
+      const emailToSend = mentor_email || (mentor_id ? (await UserService.findById(mentor_id))?.email : null);
+      if (emailToSend) {
+        await EmailService.sendMentorshipInvitation(
+          emailToSend,
+          req.user.name,
+          data.title,
+          data.description,
+          promise.id
+        );
+      }
+    }
+
+    // Create in-app notifications only if users exist
+    if (promisee_id) {
       await NotificationService.createNotification(
-        data.promisee_id,
+        promisee_id,
         'promise_invitation',
         `${req.user.name} made a promise to you: "${data.title}"`,
         promise.id
       );
     }
 
-    if (data.mentor_id) {
+    if (mentor_id) {
       await NotificationService.createNotification(
-        data.mentor_id,
+        mentor_id,
         'mentorship_invitation',
         `${req.user.name} invited you to mentor their promise: "${data.title}"`,
         promise.id

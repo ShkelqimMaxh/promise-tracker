@@ -9,6 +9,8 @@ export interface PromiseRecord {
   user_id: string;
   promisee_id?: string | null;
   mentor_id?: string | null;
+  promisee_email?: string | null;
+  mentor_email?: string | null;
   title: string;
   description?: string | null;
   deadline?: Date | null;

@@ -1,6 +1,6 @@
-# Promise Tracker Backend
+# MyPromises Backend
 
-Backend API server for Promise Tracker application with full authentication system.
+Backend API server for MyPromises application with full authentication system.
 
 ## Features
 
