@@ -223,8 +223,20 @@ router.post('/', async (req: AuthenticatedRequest, res: Response) => {
     const promise = await PromiseService.createPromise(req.user.id, promiseData);
 
     // Send emails to promisee/mentor (even if they don't exist as users)
+    // If we have an email address (user doesn't exist), use it directly
+    // If we have a user ID (user exists), fetch their email
     if (promisee_email || promisee_id) {
-      const emailToSend = promisee_email || (promisee_id ? (await UserService.findById(promisee_id))?.email : null);
+      let emailToSend: string | null = null;
+      
+      if (promisee_email) {
+        // User doesn't exist, use the email address provided
+        emailToSend = promisee_email;
+      } else if (promisee_id) {
+        // User exists, fetch their email
+        const promisee = await UserService.findById(promisee_id);
+        emailToSend = promisee?.email || null;
+      }
+      
       if (emailToSend) {
         await EmailService.sendPromiseInvitation(
           emailToSend,
@@ -237,7 +249,17 @@ router.post('/', async (req: AuthenticatedRequest, res: Response) => {
     }
 
     if (mentor_email || mentor_id) {
-      const emailToSend = mentor_email || (mentor_id ? (await UserService.findById(mentor_id))?.email : null);
+      let emailToSend: string | null = null;
+      
+      if (mentor_email) {
+        // User doesn't exist, use the email address provided
+        emailToSend = mentor_email;
+      } else if (mentor_id) {
+        // User exists, fetch their email
+        const mentor = await UserService.findById(mentor_id);
+        emailToSend = mentor?.email || null;
+      }
+      
       if (emailToSend) {
         await EmailService.sendMentorshipInvitation(
           emailToSend,
