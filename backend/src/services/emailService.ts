@@ -87,50 +87,91 @@ export class EmailService {
           <meta name="viewport" content="width=device-width, initial-scale=1.0">
           <title>You Have a New Promise</title>
         </head>
-        <body style="font-family: Arial, sans-serif; line-height: 1.6; color: #333; max-width: 600px; margin: 0 auto; padding: 20px;">
-          <div style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); padding: 30px; text-align: center; border-radius: 10px 10px 0 0;">
-            <h1 style="color: white; margin: 0;">${APP_NAME}</h1>
-          </div>
-          
-          <div style="background: #f9f9f9; padding: 30px; border-radius: 0 0 10px 10px;">
-            <h2 style="color: #667eea; margin-top: 0;">You Have a New Promise!</h2>
-            
-            <p><strong>${promiserName}</strong> has made a promise to you:</p>
-            
-            <div style="background: white; padding: 20px; border-radius: 8px; border-left: 4px solid #667eea; margin: 20px 0;">
-              <h3 style="margin-top: 0; color: #333;">${promiseTitle}</h3>
-              ${promiseDescription ? `<p style="color: #666;">${promiseDescription}</p>` : ''}
-            </div>
-            
-            <p>Join ${APP_NAME} to view and track this promise, and help ${promiserName} stay accountable!</p>
-            
-            <div style="text-align: center; margin: 30px 0;">
-              <a href="${signUpUrl}" 
-                 style="display: inline-block; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); 
-                        color: white; padding: 15px 30px; text-decoration: none; border-radius: 5px; 
-                        font-weight: bold; box-shadow: 0 4px 6px rgba(0,0,0,0.1);">
-                Join ${APP_NAME} Now
-              </a>
-            </div>
-            
-            <p style="color: #666; font-size: 14px; margin-top: 30px;">
-              If you're already a member, you can view this promise in your dashboard.
-            </p>
-            
-            <hr style="border: none; border-top: 1px solid #ddd; margin: 30px 0;">
-            
-            <p style="color: #999; font-size: 12px; text-align: center;">
-              This email was sent to ${promiseeEmail}. If you didn't expect this email, you can safely ignore it.
-            </p>
-          </div>
+        <body style="margin: 0; padding: 0; background-color: #f5f7f8; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;">
+          <table role="presentation" style="width: 100%; border-collapse: collapse; background-color: #f5f7f8;">
+            <tr>
+              <td align="center" style="padding: 40px 20px;">
+                <table role="presentation" style="max-width: 600px; width: 100%; background-color: #ffffff; border-radius: 12px; overflow: hidden; box-shadow: 0 2px 8px rgba(0,0,0,0.08);">
+                  <!-- Header -->
+                  <tr>
+                    <td style="background: linear-gradient(135deg, #14b8a6 0%, #06b6d4 100%); padding: 40px 30px; text-align: center;">
+                      <h1 style="margin: 0; color: #ffffff; font-size: 28px; font-weight: 700; letter-spacing: -0.5px;">
+                        ${APP_NAME}
+                      </h1>
+                      <p style="margin: 8px 0 0 0; color: rgba(255,255,255,0.9); font-size: 14px; font-weight: 400;">
+                        Keep your word. Build trust.
+                      </p>
+                    </td>
+                  </tr>
+                  
+                  <!-- Content -->
+                  <tr>
+                    <td style="padding: 40px 30px;">
+                      <h2 style="margin: 0 0 16px 0; color: #0f172a; font-size: 24px; font-weight: 600; line-height: 1.3;">
+                        You have a new promise!
+                      </h2>
+                      
+                      <p style="margin: 0 0 24px 0; color: #64748b; font-size: 16px; line-height: 1.6;">
+                        <strong style="color: #0f172a;">${promiserName}</strong> has made a promise to you.
+                      </p>
+                      
+                      <!-- Promise Card -->
+                      <table role="presentation" style="width: 100%; border-collapse: collapse; background-color: #f5f7f8; border-radius: 8px; border-left: 4px solid #14b8a6; margin: 0 0 32px 0;">
+                        <tr>
+                          <td style="padding: 24px;">
+                            <h3 style="margin: 0 0 12px 0; color: #0f172a; font-size: 20px; font-weight: 600; line-height: 1.4;">
+                              ${promiseTitle}
+                            </h3>
+                            ${promiseDescription ? `<p style="margin: 0; color: #64748b; font-size: 15px; line-height: 1.6;">${promiseDescription}</p>` : ''}
+                          </td>
+                        </tr>
+                      </table>
+                      
+                      <p style="margin: 0 0 32px 0; color: #64748b; font-size: 16px; line-height: 1.6;">
+                        Join ${APP_NAME} to view and track this promise, and help ${promiserName} stay accountable.
+                      </p>
+                      
+                      <!-- CTA Button -->
+                      <table role="presentation" style="width: 100%; border-collapse: collapse; margin: 0 0 32px 0;">
+                        <tr>
+                          <td align="center" style="padding: 0;">
+                            <a href="${signUpUrl}" style="display: inline-block; background: linear-gradient(135deg, #14b8a6 0%, #06b6d4 100%); color: #ffffff; text-decoration: none; padding: 14px 32px; border-radius: 8px; font-weight: 600; font-size: 16px; box-shadow: 0 4px 12px rgba(20, 184, 166, 0.3);">
+                              Join ${APP_NAME} Now
+                            </a>
+                          </td>
+                        </tr>
+                      </table>
+                      
+                      <p style="margin: 0; color: #94a3b8; font-size: 14px; line-height: 1.5;">
+                        If you're already a member, you can view this promise in your dashboard.
+                      </p>
+                    </td>
+                  </tr>
+                  
+                  <!-- Footer -->
+                  <tr>
+                    <td style="padding: 24px 30px; background-color: #f5f7f8; border-top: 1px solid #e2e8f0;">
+                      <p style="margin: 0; color: #94a3b8; font-size: 12px; text-align: center; line-height: 1.5;">
+                        This email was sent to ${promiseeEmail}.<br>
+                        If you didn't expect this email, you can safely ignore it.
+                      </p>
+                    </td>
+                  </tr>
+                </table>
+              </td>
+            </tr>
+          </table>
         </body>
       </html>
     `;
 
     const text = `
 ${APP_NAME}
+Keep your word. Build trust.
 
-You Have a New Promise!
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+You have a new promise!
 
 ${promiserName} has made a promise to you:
 
@@ -143,8 +184,10 @@ Sign up here: ${signUpUrl}
 
 If you're already a member, you can view this promise in your dashboard.
 
----
-This email was sent to ${promiseeEmail}. If you didn't expect this email, you can safely ignore it.
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+This email was sent to ${promiseeEmail}.
+If you didn't expect this email, you can safely ignore it.
     `;
 
     await this.sendEmail(
@@ -177,55 +220,105 @@ This email was sent to ${promiseeEmail}. If you didn't expect this email, you ca
           <meta name="viewport" content="width=device-width, initial-scale=1.0">
           <title>Mentorship Invitation</title>
         </head>
-        <body style="font-family: Arial, sans-serif; line-height: 1.6; color: #333; max-width: 600px; margin: 0 auto; padding: 20px;">
-          <div style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); padding: 30px; text-align: center; border-radius: 10px 10px 0 0;">
-            <h1 style="color: white; margin: 0;">${APP_NAME}</h1>
-          </div>
-          
-          <div style="background: #f9f9f9; padding: 30px; border-radius: 0 0 10px 10px;">
-            <h2 style="color: #667eea; margin-top: 0;">Mentorship Invitation</h2>
-            
-            <p><strong>${promiserName}</strong> has invited you to be a mentor for their promise:</p>
-            
-            <div style="background: white; padding: 20px; border-radius: 8px; border-left: 4px solid #667eea; margin: 20px 0;">
-              <h3 style="margin-top: 0; color: #333;">${promiseTitle}</h3>
-              ${promiseDescription ? `<p style="color: #666;">${promiseDescription}</p>` : ''}
-            </div>
-            
-            <p>As a mentor, you'll be able to:</p>
-            <ul style="color: #666;">
-              <li>View the promise and its progress</li>
-              <li>Add notes and encouragement</li>
-              <li>Help ${promiserName} stay accountable</li>
-            </ul>
-            
-            <p>Join ${APP_NAME} to accept this mentorship invitation!</p>
-            
-            <div style="text-align: center; margin: 30px 0;">
-              <a href="${signUpUrl}" 
-                 style="display: inline-block; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); 
-                        color: white; padding: 15px 30px; text-decoration: none; border-radius: 5px; 
-                        font-weight: bold; box-shadow: 0 4px 6px rgba(0,0,0,0.1);">
-                Join ${APP_NAME} Now
-              </a>
-            </div>
-            
-            <p style="color: #666; font-size: 14px; margin-top: 30px;">
-              If you're already a member, you can view this promise in your dashboard.
-            </p>
-            
-            <hr style="border: none; border-top: 1px solid #ddd; margin: 30px 0;">
-            
-            <p style="color: #999; font-size: 12px; text-align: center;">
-              This email was sent to ${mentorEmail}. If you didn't expect this email, you can safely ignore it.
-            </p>
-          </div>
+        <body style="margin: 0; padding: 0; background-color: #f5f7f8; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;">
+          <table role="presentation" style="width: 100%; border-collapse: collapse; background-color: #f5f7f8;">
+            <tr>
+              <td align="center" style="padding: 40px 20px;">
+                <table role="presentation" style="max-width: 600px; width: 100%; background-color: #ffffff; border-radius: 12px; overflow: hidden; box-shadow: 0 2px 8px rgba(0,0,0,0.08);">
+                  <!-- Header -->
+                  <tr>
+                    <td style="background: linear-gradient(135deg, #14b8a6 0%, #06b6d4 100%); padding: 40px 30px; text-align: center;">
+                      <h1 style="margin: 0; color: #ffffff; font-size: 28px; font-weight: 700; letter-spacing: -0.5px;">
+                        ${APP_NAME}
+                      </h1>
+                      <p style="margin: 8px 0 0 0; color: rgba(255,255,255,0.9); font-size: 14px; font-weight: 400;">
+                        Keep your word. Build trust.
+                      </p>
+                    </td>
+                  </tr>
+                  
+                  <!-- Content -->
+                  <tr>
+                    <td style="padding: 40px 30px;">
+                      <h2 style="margin: 0 0 16px 0; color: #0f172a; font-size: 24px; font-weight: 600; line-height: 1.3;">
+                        Mentorship Invitation
+                      </h2>
+                      
+                      <p style="margin: 0 0 24px 0; color: #64748b; font-size: 16px; line-height: 1.6;">
+                        <strong style="color: #0f172a;">${promiserName}</strong> has invited you to be a mentor for their promise.
+                      </p>
+                      
+                      <!-- Promise Card -->
+                      <table role="presentation" style="width: 100%; border-collapse: collapse; background-color: #f5f7f8; border-radius: 8px; border-left: 4px solid #14b8a6; margin: 0 0 32px 0;">
+                        <tr>
+                          <td style="padding: 24px;">
+                            <h3 style="margin: 0 0 12px 0; color: #0f172a; font-size: 20px; font-weight: 600; line-height: 1.4;">
+                              ${promiseTitle}
+                            </h3>
+                            ${promiseDescription ? `<p style="margin: 0; color: #64748b; font-size: 15px; line-height: 1.6;">${promiseDescription}</p>` : ''}
+                          </td>
+                        </tr>
+                      </table>
+                      
+                      <p style="margin: 0 0 20px 0; color: #64748b; font-size: 16px; line-height: 1.6;">
+                        As a mentor, you'll be able to:
+                      </p>
+                      
+                      <table role="presentation" style="width: 100%; border-collapse: collapse; margin: 0 0 32px 0;">
+                        <tr>
+                          <td style="padding: 0;">
+                            <ul style="margin: 0; padding-left: 20px; color: #64748b; font-size: 15px; line-height: 1.8;">
+                              <li style="margin-bottom: 8px;">View the promise and its progress</li>
+                              <li style="margin-bottom: 8px;">Add notes and encouragement</li>
+                              <li>Help ${promiserName} stay accountable</li>
+                            </ul>
+                          </td>
+                        </tr>
+                      </table>
+                      
+                      <p style="margin: 0 0 32px 0; color: #64748b; font-size: 16px; line-height: 1.6;">
+                        Join ${APP_NAME} to accept this mentorship invitation!
+                      </p>
+                      
+                      <!-- CTA Button -->
+                      <table role="presentation" style="width: 100%; border-collapse: collapse; margin: 0 0 32px 0;">
+                        <tr>
+                          <td align="center" style="padding: 0;">
+                            <a href="${signUpUrl}" style="display: inline-block; background: linear-gradient(135deg, #14b8a6 0%, #06b6d4 100%); color: #ffffff; text-decoration: none; padding: 14px 32px; border-radius: 8px; font-weight: 600; font-size: 16px; box-shadow: 0 4px 12px rgba(20, 184, 166, 0.3);">
+                              Join ${APP_NAME} Now
+                            </a>
+                          </td>
+                        </tr>
+                      </table>
+                      
+                      <p style="margin: 0; color: #94a3b8; font-size: 14px; line-height: 1.5;">
+                        If you're already a member, you can view this promise in your dashboard.
+                      </p>
+                    </td>
+                  </tr>
+                  
+                  <!-- Footer -->
+                  <tr>
+                    <td style="padding: 24px 30px; background-color: #f5f7f8; border-top: 1px solid #e2e8f0;">
+                      <p style="margin: 0; color: #94a3b8; font-size: 12px; text-align: center; line-height: 1.5;">
+                        This email was sent to ${mentorEmail}.<br>
+                        If you didn't expect this email, you can safely ignore it.
+                      </p>
+                    </td>
+                  </tr>
+                </table>
+              </td>
+            </tr>
+          </table>
         </body>
       </html>
     `;
 
     const text = `
 ${APP_NAME}
+Keep your word. Build trust.
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
 Mentorship Invitation
 
@@ -235,9 +328,9 @@ ${promiseTitle}
 ${promiseDescription ? `\n${promiseDescription}\n` : ''}
 
 As a mentor, you'll be able to:
-- View the promise and its progress
-- Add notes and encouragement
-- Help ${promiserName} stay accountable
+• View the promise and its progress
+• Add notes and encouragement
+• Help ${promiserName} stay accountable
 
 Join ${APP_NAME} to accept this mentorship invitation!
 
@@ -245,8 +338,10 @@ Sign up here: ${signUpUrl}
 
 If you're already a member, you can view this promise in your dashboard.
 
----
-This email was sent to ${mentorEmail}. If you didn't expect this email, you can safely ignore it.
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+This email was sent to ${mentorEmail}.
+If you didn't expect this email, you can safely ignore it.
     `;
 
     await this.sendEmail(
